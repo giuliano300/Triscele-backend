@@ -5,11 +5,14 @@ import { Booking, BookingDocument } from '../schemas/booking.schema';
 import { CreateBookingDto } from '../dto/create-booking.dto';
 import { UpdateBookingDto } from '../dto/update-booking.dto';
 import { FilterBookingsDto } from 'src/filters/filter-bookings.dto';
+import { Payment, PaymentDocument } from 'src/schemas/payment.schema';
+import { BookingWithPayments } from 'src/interfaces/BookingWithPayments';
 
 @Injectable()
 export class BookingService {
   constructor(
     @InjectModel(Booking.name) private bookingModel: Model<BookingDocument>,
+    @InjectModel(Payment.name) private paymentModel: Model<PaymentDocument>,
   ) {}
 
   async create(createBookingDto: CreateBookingDto, userId: string): Promise<Booking> {
@@ -21,8 +24,8 @@ export class BookingService {
     return booking.save();
   }
 
-  async findAll(filterDto: FilterBookingsDto): Promise<Booking[]> {
-    const { spaceId, userId, date, status } = filterDto;
+  async findAll(filterDto: FilterBookingsDto): Promise<BookingWithPayments[]> {
+    const { spaceId, userId, date, status, start, end } = filterDto;
 
     const query: FilterQuery<Booking> = {};
 
@@ -35,14 +38,31 @@ export class BookingService {
     if (date)
       query.date = date;
 
+    if (start)
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      query.date >= start;
+
+    if (end)
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      query.date <= end;
+
     if (status)
       query.status = status;
 
-    return this.bookingModel
+    const bookings = await this.bookingModel
       .find(query)
       .populate('user')
       .populate('space')
       .exec();
+
+      const bookingsWithPayments: BookingWithPayments[] = await Promise.all(
+        bookings.map(async (booking) => {
+          const payments = await this.paymentModel.find({ bookingId: booking._id }).exec();
+          return { booking, payments };
+        }),
+      );
+      
+      return bookingsWithPayments;
   }
 
   async findByUser(userId: string): Promise<Booking[]> {

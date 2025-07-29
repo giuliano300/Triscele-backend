@@ -1,4 +1,3 @@
-// src/bookings/schemas/booking.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import { User } from './user.schema';
@@ -23,6 +22,7 @@ export class Booking extends Document {
 
   @Prop({ default: 'pending' })
   status: 'pending' | 'confirmed' | 'cancelled';
+
 }
 
 export type BookingDocument = Booking & Document;

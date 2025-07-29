@@ -1,7 +1,7 @@
 import { Controller, Post, Body, UnauthorizedException, UseGuards, Get, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { LoginDto } from '../dto/login.dto';
+import { CreateUserDto } from '../../dto/create-user.dto';
+import { LoginDto } from '../../dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/roles/roles.guard';
 

@@ -1,4 +1,4 @@
-import { UserRole } from 'src/roles/roles.decorator';
+import { UserRole } from '../roles/roles.decorator';
 
 export interface AuthUser {
   _id: string;

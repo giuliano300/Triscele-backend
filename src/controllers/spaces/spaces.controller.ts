@@ -8,9 +8,9 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { SpacesService } from '../services/spaces.service';
-import { UpdateSpaceDto } from '../dto/update-space.dto';
-import { Space } from '../schemas/space.schema';
+import { SpacesService } from '../../services/spaces.service';
+import { UpdateSpaceDto } from '../../dto/update-space.dto';
+import { Space } from '../../schemas/space.schema';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { Roles } from 'src/roles/roles.decorator';
 import { AuthGuard } from '@nestjs/passport';
@@ -24,6 +24,8 @@ export class SpacesController {
 
   // GET /spaces
   @Get()
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin','gestore')
   async findAll(): Promise<Space[]> {
     return this.spacesService.findAll();
   }

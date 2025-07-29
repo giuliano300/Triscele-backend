@@ -14,6 +14,14 @@ export class FilterBookingsDto {
   date?: string;
 
   @IsOptional()
+  @IsDateString()
+  start?: Date;
+
+  @IsOptional()
+  @IsDateString()
+  end?: Date;
+
+  @IsOptional()
   @IsString()
   status?: string;
 }

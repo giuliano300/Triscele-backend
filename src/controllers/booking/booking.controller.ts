@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UseGuards } from "@nestjs/common";
-import { CreateBookingDto } from "../dto/create-booking.dto";
-import { UpdateBookingDto } from "../dto/update-booking.dto";
-import { Roles } from "../roles/roles.decorator";
-import { RolesGuard } from "../roles/roles.guard";
-import { BookingService } from "../services/booking.service";
+import { CreateBookingDto } from "../../dto/create-booking.dto";
+import { UpdateBookingDto } from "../../dto/update-booking.dto";
+import { Roles } from "../../roles/roles.decorator";
+import { RolesGuard } from "../../roles/roles.guard";
+import { BookingService } from "../../services/booking.service";
 import { AuthGuard } from "@nestjs/passport";
 import { FilterBookingsDto } from "src/filters/filter-bookings.dto";
 
@@ -19,6 +19,8 @@ export class BookingsController {
   }
 
   @Get()
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles('admin','gestore')
   async findAll(@Query() filterDto: FilterBookingsDto) {
     return this.bookingsService.findAll(filterDto);
   }

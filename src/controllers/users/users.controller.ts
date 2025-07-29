@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Put, Query, UseGuards } from '@nestjs/common';
-import { UsersService } from '../services/users.service';
-import { User } from '../schemas/user.schema';
+import { UsersService } from '../../services/users.service';
+import { User } from '../../schemas/user.schema';
 import { UpdateUserDto } from 'src/dto/update-user.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/roles/roles.guard';
