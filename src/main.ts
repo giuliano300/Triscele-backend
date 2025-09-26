@@ -8,8 +8,8 @@ async function bootstrap() {
   app.enableCors();
 
   const config = new DocumentBuilder()
-    .setTitle('Centro Polifunzionale API')
-    .setDescription('API per la gestione del centro polifunzionale')
+    .setTitle('Triscele API')
+    .setDescription('API per la gestione di Triscele')
     .setVersion('1.0')
     .addBearerAuth(
     {

@@ -1,24 +1,26 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { SpacesModule } from './controllers/spaces/spaces.module';
 import { AuthModule } from './controllers/auth/auth.module';
 import { UsersModule } from './controllers/users/users.module';
 import { AppService } from './app.service';
-import { BookingsModule } from './controllers/booking/booking.module';
-import { CourseBookingModule } from './controllers/course-booking/course-booking.module';
-import { CoursesModule } from './controllers/courses/courses.module';
-import { PaymentModule } from './controllers/payment/payment.module';
+import { CustomersModule } from './controllers/Customers/customers.module';
+import { SupplierModule } from './controllers/Suppliers/suppliers.module';
+import { OperatorsModule } from './controllers/Operator/operators.module';
+import { PermissionsModule } from './controllers/Permissions/permissions.module';
+import { CategoriesModule } from './controllers/Categories/categories.module';
+import { ProductModule } from './controllers/Products/product.module';
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://localhost:27017/centro-db'),
-    SpacesModule,
+    MongooseModule.forRoot('mongodb://localhost:27017/triscele'),
+    CustomersModule,
     AuthModule,
     UsersModule,
-    BookingsModule,
-    CoursesModule,
-    CourseBookingModule,
-    PaymentModule
+    SupplierModule,
+    OperatorsModule,
+    PermissionsModule,
+    CategoriesModule,
+    ProductModule
   ],
   controllers: [AppController],
     providers: [AppService],
