@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+import { Category } from './category.schema';
+import { Supplier } from './suppliers.schema';
 
 export type ProductDocument = Product & Document;
 
@@ -11,8 +13,9 @@ export class Product {
   @Prop({ required: true })
   internalCode: string;
 
-  @Prop({ required: true })
-  categoryId: string;
+  // cambio da string a ObjectId con ref
+  @Prop({ type: Types.ObjectId, ref: Category.name, required: true })
+  categoryId: Types.ObjectId;
 
   @Prop({ required: true })
   theshold: number;
@@ -32,14 +35,15 @@ export class Product {
   @Prop({ required: true })
   supplierCode: string;
 
-  @Prop({ required: true })
-  supplierId: string;
+  // cambio da string a ObjectId con ref
+  @Prop({ type: Types.ObjectId, ref: Supplier.name, required: true })
+  supplierId: Types.ObjectId;
 
   @Prop()
   description: string;
 
   @Prop()
-  files: string[];
+  files: unknown[];
 
   @Prop()
   amazonCode: string;

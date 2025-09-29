@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { CreateProductDto, UpdateProductDto } from 'src/dto/product.dto';
 import { Product } from 'src/schemas/product.schema';
 import { ProductService } from 'src/services/product.service';
@@ -13,12 +13,15 @@ export class ProductController {
   }
 
   @Get()
-  findAll(): Promise<Product[]> {
-    return this.productService.findAll();
+  findAll(
+    @Query('categoryId') categoryId?: string,
+    @Query('supplierId') supplierId?: string,
+  ): Promise<unknown[]> {
+    return this.productService.findAll(categoryId, supplierId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<Product> {
+  findOne(@Param('id') id: string): Promise<unknown> {
     return this.productService.findOne(id);
   }
 
@@ -28,7 +31,7 @@ export class ProductController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<void> {
+  remove(@Param('id') id: string): Promise<boolean> {
     return this.productService.remove(id);
   }
 }

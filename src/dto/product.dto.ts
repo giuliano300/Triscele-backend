@@ -37,7 +37,7 @@ export class CreateProductDto {
   description?: string;
 
   @IsOptional()
-  files?: string[];
+  files?: unknown[];
 
   @IsOptional()
   @IsString()

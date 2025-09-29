@@ -10,6 +10,7 @@ import { OperatorsModule } from './controllers/Operator/operators.module';
 import { PermissionsModule } from './controllers/Permissions/permissions.module';
 import { CategoriesModule } from './controllers/Categories/categories.module';
 import { ProductModule } from './controllers/Products/product.module';
+import { OrderModule } from './controllers/Orders/order.module';
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://localhost:27017/triscele'),
@@ -20,7 +21,8 @@ import { ProductModule } from './controllers/Products/product.module';
     OperatorsModule,
     PermissionsModule,
     CategoriesModule,
-    ProductModule
+    ProductModule,
+    OrderModule
   ],
   controllers: [AppController],
     providers: [AppService],
