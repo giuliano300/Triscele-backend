@@ -66,6 +66,9 @@ export class Order {
   @Prop({ required: true })
   orderProducts: OrderProducts[];
 
+  @Prop({ required: true })
+  totalPrice: number;
+
 
 }
 

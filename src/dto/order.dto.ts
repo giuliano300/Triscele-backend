@@ -61,6 +61,11 @@ export class CreateOrderDto {
   @IsNotEmpty()
   @IsArray()
   orderProducts: OrderProducts[];
+
+  @IsNotEmpty()
+  @IsNumber()
+  totalPrice: number;
+
 }
 
 export class UpdateOrderDto extends CreateOrderDto {}
