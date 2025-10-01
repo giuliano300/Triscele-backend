@@ -69,6 +69,11 @@ export class Order {
   @Prop({ required: true })
   totalPrice: number;
 
+  @Prop({ required: true })
+  createdAt: Date;
+
+  @Prop({ required: true })
+  updatedAt: Date;
 
 }
 

@@ -13,13 +13,20 @@ export class CustomerService {
 
   // Crea un nuovo customer
   async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
-    const createdCustomer = new this.customerModel(createCustomerDto);
+    const createdCustomer = new this.customerModel(
+      {
+        ...createCustomerDto,
+        createdAt: new Date()
+      }
+    );
     return createdCustomer.save();
   }
 
   // Recupera tutti i customer
   async findAll(): Promise<Customer[]> {
-    return this.customerModel.find().exec();
+    return this.customerModel.find()      
+          .sort({ createdAt: -1 })
+          .exec();
   }
 
   // Recupera un customer per ID
@@ -34,7 +41,10 @@ export class CustomerService {
   // Aggiorna un customer per ID
   async update(id: string, updateCustomerDto: UpdateCustomerDto): Promise<Customer> {
     const updatedCustomer = await this.customerModel
-      .findByIdAndUpdate(id, updateCustomerDto, { new: true })
+      .findByIdAndUpdate(id, {
+        ...updateCustomerDto,
+        updatedAt: new Date()
+      }, { new: true })
       .exec();
     if (!updatedCustomer) {
       throw new NotFoundException(`Customer con ID ${id} non trovato`);

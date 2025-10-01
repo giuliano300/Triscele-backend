@@ -49,6 +49,12 @@ export class Supplier {
 
   @Prop({ required: true })
   pwd: string;
+  
+  @Prop({ required: true })
+  createdAt: Date;
+
+  @Prop({ required: true })
+  updatedAt: Date;
 
 }
 

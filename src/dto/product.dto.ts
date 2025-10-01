@@ -20,6 +20,9 @@ export class CreateProductDto {
   @IsNumber()
   cost: number;
 
+  @IsNumber()
+  stock: number;
+
   @IsBoolean()
   enabled: boolean;
 

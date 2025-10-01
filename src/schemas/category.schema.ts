@@ -10,6 +10,13 @@ export class Category {
 
   @Prop({ required: true })
   source: string;
+
+  @Prop({ required: true })
+  createdAt: Date;
+
+  @Prop({ required: true })
+  updatedAt: Date;
+
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);

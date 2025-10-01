@@ -47,6 +47,11 @@ export class Customer {
   @Prop({ required: true })
   city: string;
 
+  @Prop({ required: true })
+  createdAt: Date;
+
+  @Prop({ required: true })
+  updatedAt: Date;
 }
 
 export const CustomerSchema = SchemaFactory.createForClass(Customer);

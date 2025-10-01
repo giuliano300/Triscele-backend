@@ -12,7 +12,10 @@ export class ProductService {
   constructor(@InjectModel(Product.name) private productModel: Model<ProductDocument>) {}
 
   async create(dto: CreateProductDto): Promise<Product> {
-    const product = new this.productModel(dto);
+    const product = new this.productModel({
+      ...dto,
+      createdAt: new Date()
+    });
     return product.save();
   }
 
@@ -29,6 +32,7 @@ async findAll(
       .find(filter)      
       .populate({ path: 'categoryId', select: 'name' })
       .populate({ path: 'supplierId', select: 'name supplierCode' })
+      .sort({ createdAt: -1 })
       .lean()
       .exec();
 
@@ -55,7 +59,8 @@ async findAll(
           categoryId: String(product.categoryId._id),
           supplierId: String(product.supplierId._id),
           category: category,
-          supplier: supplier
+          supplier: supplier,
+          stock:product.stock
         };
       });
   }
@@ -89,12 +94,16 @@ async findAll(
       categoryId: String(product.categoryId._id),
       supplierId: String(product.supplierId._id),
       category: category,
-      supplier: supplier
+      supplier: supplier,
+      stock:product.stock
     }
   }
 
   async update(id: string, dto: UpdateProductDto): Promise<Product> {
-    const updated = await this.productModel.findByIdAndUpdate(id, dto, { new: true }).exec();
+    const updated = await this.productModel.findByIdAndUpdate(id, {
+      ...dto,
+      updatedAt: new Date()
+    }, { new: true }).exec();
     if (!updated) throw new NotFoundException(`Product ${id} non trovato`);
     return updated;
   }

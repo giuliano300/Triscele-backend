@@ -7,6 +7,12 @@ export type PermissionDocument = Permission & Document;
 export class Permission {
   @Prop({ required: true, unique: true })
   name: string;
+  
+  @Prop({ required: true })
+  createdAt: Date;
+
+  @Prop({ required: true })
+  updatedAt: Date;
 }
 
 export const PermissionSchema = SchemaFactory.createForClass(Permission);

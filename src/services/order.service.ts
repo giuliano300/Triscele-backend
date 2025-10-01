@@ -13,6 +13,7 @@ export class OrderService {
       ...dto,
       customerId: new Types.ObjectId(dto.customerId),
       operatorId: new Types.ObjectId(dto.operatorId),
+      createdAt: new Date()
     });
     return createdOrder.save();
   }
@@ -22,6 +23,7 @@ export class OrderService {
       .find()
       .populate('customerId', 'name')
       .populate('operatorId', 'name')
+      .sort({ createdAt: -1 })
       .exec();
   }
 
@@ -46,6 +48,7 @@ export class OrderService {
         ...dto,
         customerId: new Types.ObjectId(dto.customerId),
         operatorId: new Types.ObjectId(dto.operatorId),
+        updatedAt: new Date()
       },
       { new: true },
     );

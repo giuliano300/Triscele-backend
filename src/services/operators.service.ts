@@ -13,13 +13,18 @@ export class OperatorService {
 
   // Crea un nuovo Operator
   async create(createOperatorDto: CreateOperatorDto): Promise<Operator> {
-    const createdOperator = new this.OperatorModel(createOperatorDto);
+    const createdOperator = new this.OperatorModel({
+      ...createOperatorDto,
+      createdAt: new Date()
+    });
     return createdOperator.save();
   }
 
   // Recupera tutti i Operator
   async findAll(): Promise<Operator[]> {
-    return this.OperatorModel.find().exec();
+    return this.OperatorModel.find()
+          .sort({ createdAt: -1 })
+          .exec();
   }
 
   // Recupera un Operator per ID
@@ -34,7 +39,10 @@ export class OperatorService {
   // Aggiorna un Operator per ID
   async update(id: string, updateOperatorDto: UpdateOperatorDto): Promise<Operator> {
     const updatedOperator = await this.OperatorModel
-      .findByIdAndUpdate(id, updateOperatorDto, { new: true })
+      .findByIdAndUpdate(id, {
+        ...updateOperatorDto,
+        updatedAt: new Date()
+      }, { new: true })
       .exec();
     if (!updatedOperator) {
       throw new NotFoundException(`Operator con ID ${id} non trovato`);

@@ -13,13 +13,18 @@ export class SupplierService {
 
   // Crea un nuovo Supplier
   async create(createSupplierDto: CreateSupplierDto): Promise<Supplier> {
-    const createdSupplier = new this.SupplierModel(createSupplierDto);
+    const createdSupplier = new this.SupplierModel({
+      ...createSupplierDto,
+      createdAt: new Date()
+    });
     return createdSupplier.save();
   }
 
   // Recupera tutti i Supplier
   async findAll(): Promise<Supplier[]> {
-    return this.SupplierModel.find().exec();
+    return this.SupplierModel.find()
+          .sort({ createdAt: -1 })
+          .exec();
   }
 
   // Recupera un Supplier per ID
@@ -34,7 +39,10 @@ export class SupplierService {
   // Aggiorna un Supplier per ID
   async update(id: string, updateSupplierDto: UpdateSupplierDto): Promise<Supplier> {
     const updatedSupplier = await this.SupplierModel
-      .findByIdAndUpdate(id, updateSupplierDto, { new: true })
+      .findByIdAndUpdate(id, {
+        ...updateSupplierDto,
+        updatedAt: new Date()
+      }, { new: true })
       .exec();
     if (!updatedSupplier) {
       throw new NotFoundException(`Supplier con ID ${id} non trovato`);

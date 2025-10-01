@@ -21,4 +21,5 @@ export interface ProductViewModel {
   supplierId?: string;
   category: Category | null;
   supplier: Supplier | null;
+  stock: number;
 }

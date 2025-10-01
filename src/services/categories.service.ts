@@ -12,13 +12,18 @@ export class CategoriesService {
 
   // Crea una nuova Category
   async create(categoryDto: CategoryDto): Promise<Category> {
-    const createdCategory = new this.categoriesModel(categoryDto);
+    const createdCategory = new this.categoriesModel({
+      ...categoryDto,
+      createdAt: new Date()
+    }
+  );
+
     return createdCategory.save();
   }
 
   // Recupera tutte le Category
   async findAll(): Promise<Category[]> {
-    return this.categoriesModel.find().exec();
+    return this.categoriesModel.find().sort({ createdAt: -1 }).exec();
   }
 
   // Recupera una Category per ID
@@ -33,7 +38,12 @@ export class CategoriesService {
   // Aggiorna una Category per ID
   async update(id: string, categoryDto: CategoryDto): Promise<Category> {
     const cat = await this.categoriesModel
-      .findByIdAndUpdate(id, categoryDto, { new: true })
+      .findByIdAndUpdate(id, 
+        {
+          ...categoryDto,
+          updatedAt: new Date()
+        }, 
+        { new: true })
       .exec();
     if (!cat) {
       throw new NotFoundException(`Category con ID ${id} non trovato`);

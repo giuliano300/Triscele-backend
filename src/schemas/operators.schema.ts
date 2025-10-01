@@ -54,6 +54,12 @@ export class Operator {
 
   @Prop()
   gender: string;
+  
+  @Prop({ required: true })
+  createdAt: Date;
+
+  @Prop({ required: true })
+  updatedAt: Date;
 
   @Prop({ type: [PermissionEmbedded], default: [] })
   permissions: PermissionEmbedded[];
