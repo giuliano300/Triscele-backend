@@ -35,7 +35,7 @@ async findAll(
     const products = await this.productModel
       .find(filter)      
       .populate({ path: 'categoryId', select: 'name' })
-      .populate({ path: 'supplierId', select: 'name supplierCode' })
+      .populate({ path: 'supplierId', select: 'name lastName supplierCode businessName' })
       .sort({ createdAt: -1 })
       .lean()
       .exec();
