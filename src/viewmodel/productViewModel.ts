@@ -1,4 +1,5 @@
 import { Category } from "src/schemas/category.schema";
+import { ProductMovements } from "src/schemas/product-movement.schema";
 import { Supplier } from "src/schemas/suppliers.schema";
 
 export interface ProductViewModel {
@@ -22,4 +23,5 @@ export interface ProductViewModel {
   category: Category | null;
   supplier: Supplier | null;
   stock: number;
+  productMovements: ProductMovements[];
 }

@@ -1,15 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateProductDto, UpdateProductDto } from 'src/dto/product.dto';
 import { Category } from 'src/schemas/category.schema';
 import { Product, ProductDocument } from 'src/schemas/product.schema';
 import { Supplier } from 'src/schemas/suppliers.schema';
 import { ProductViewModel } from '../viewmodel/productViewModel';
+import { ProductMovements, ProductMovementsDocument } from 'src/schemas/product-movement.schema';
 
 @Injectable()
 export class ProductService {
-  constructor(@InjectModel(Product.name) private productModel: Model<ProductDocument>) {}
+  constructor(
+    @InjectModel(Product.name) private productModel: Model<ProductDocument>,
+     @InjectModel(ProductMovements.name) private productMovementModel: Model<ProductMovementsDocument>,
+  ) {}
 
   async create(dto: CreateProductDto): Promise<Product> {
     const product = new this.productModel({
@@ -36,9 +40,15 @@ async findAll(
       .lean()
       .exec();
 
-    return products.map(product => {
+    return await Promise.all(
+      products.map(async product => {
         const category = product.categoryId as unknown as Category;
         const supplier = product.supplierId as unknown as Supplier;
+
+        const productMovements = await this.productMovementModel
+          .find({ productId: String(product._id) })
+          .sort({ createdAt: -1 })
+          .exec();
 
         return {
           id: String(product._id),
@@ -60,9 +70,11 @@ async findAll(
           supplierId: String(product.supplierId._id),
           category: category,
           supplier: supplier,
-          stock:product.stock
+          stock: product.stock,
+          productMovements: productMovements
         };
-      });
+      })
+    );
   }
 
   async findOne(id: string): Promise<ProductViewModel> {
@@ -75,6 +87,10 @@ async findAll(
     
     const category = product.categoryId as unknown as Category;
     const supplier = product.supplierId as unknown as Supplier;
+    const productMovements = await this.productMovementModel
+      .find({ productId: String(product._id) })
+      .exec();    
+
     return {
       id: String(product._id),
       name: product.name,
@@ -95,7 +111,8 @@ async findAll(
       supplierId: String(product.supplierId._id),
       category: category,
       supplier: supplier,
-      stock:product.stock
+      stock:product.stock,
+      productMovements: productMovements
     }
   }
 
