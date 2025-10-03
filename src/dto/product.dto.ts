@@ -1,4 +1,5 @@
 import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { SubProducts } from 'src/interfaces/subProduct';
 
 export class CreateProductDto {
   @IsString()
@@ -41,6 +42,9 @@ export class CreateProductDto {
 
   @IsOptional()
   files?: unknown[];
+
+  @IsOptional()
+  subProducts?: SubProducts[];
 
   @IsOptional()
   @IsString()

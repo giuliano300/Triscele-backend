@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateProductDto, UpdateProductDto } from 'src/dto/product.dto';
 import { Category } from 'src/schemas/category.schema';
 import { Product, ProductDocument } from 'src/schemas/product.schema';
@@ -71,8 +71,7 @@ async findAll(
           category: category,
           supplier: supplier,
           stock: product.stock,
-          productMovements: productMovements,
-          subProducts: product.subProducts
+          productMovements: productMovements
         };
       })
     );
@@ -113,8 +112,7 @@ async findAll(
       category: category,
       supplier: supplier,
       stock:product.stock,
-      productMovements: productMovements,
-      subProducts: product.subProducts
+      productMovements: productMovements
     }
   }
 

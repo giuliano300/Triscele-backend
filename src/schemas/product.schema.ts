@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { Category } from './category.schema';
 import { Supplier } from './suppliers.schema';
+import { SubProducts } from 'src/interfaces/subProduct';
 
 export type ProductDocument = Product & Document;
 
@@ -56,6 +57,9 @@ export class Product {
 
   @Prop()
   manomanoCode: string;
+  
+  @Prop()
+  subProducts: SubProducts[];
   
   @Prop({ required: true })
   createdAt: Date;
