@@ -11,11 +11,11 @@ export class Category {
   @Prop({ required: true })
   source: string;
 
-  @Prop({ required: true })
-  createdAt: Date;
+  @Prop()
+  createdAt?: Date;
 
-  @Prop({ required: true })
-  updatedAt: Date;
+  @Prop()
+  updatedAt?: Date;
 
 }
 

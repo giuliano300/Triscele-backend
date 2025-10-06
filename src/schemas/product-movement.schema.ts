@@ -16,8 +16,11 @@ export class ProductMovements {
   @Prop({ type: Types.ObjectId, ref: Product.name, required: true })
   productId: Types.ObjectId;
 
-  @Prop({ required: true })
-  createdAt: Date;
+  @Prop()
+  createdAt?: Date;
+
+  @Prop()
+  updatedAt?: Date;
 
 }
 

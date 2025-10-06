@@ -16,8 +16,9 @@ export class ProductController {
   findAll(
     @Query('categoryId') categoryId?: string,
     @Query('supplierId') supplierId?: string,
+    @Query('name') name?: string,
   ): Promise<unknown[]> {
-    return this.productService.findAll(categoryId, supplierId);
+    return this.productService.findAll(categoryId, supplierId, name);
   }
 
   @Get(':id')

@@ -16,14 +16,14 @@ export class CreateOrderDto {
   status: OrderStatus;
 
   @IsNotEmpty()
-  insertDate: string;
+  insertDate: Date;
 
   @IsNotEmpty()
   @IsEnum(PaymentMethod)
   paymentMethod: PaymentMethod;
 
   @IsNotEmpty()
-  expectedDelivery: string;
+  expectedDelivery: Date;
 
   @IsNotEmpty()
   origin: string;

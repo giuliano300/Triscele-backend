@@ -25,12 +25,15 @@ export class ProductService {
 
 async findAll(
   categoryId?: string,
-  supplierId?: string): Promise<ProductViewModel[]> {
+  supplierId?: string, 
+  name?: string
+): Promise<ProductViewModel[]> {
     // Creo il filtro dinamico
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filter: any = {};
     if (categoryId) filter.categoryId = categoryId;
     if (supplierId) filter.supplierId = supplierId;
+    if (name) filter.name = { $regex: name, $options: 'i' };
     
     const products = await this.productModel
       .find(filter)      

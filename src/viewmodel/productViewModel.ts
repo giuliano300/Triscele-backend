@@ -24,6 +24,6 @@ export interface ProductViewModel {
   category: Category | null;
   supplier: Supplier | null;
   stock: number;
-  productMovements: ProductMovements[];
+  productMovements?: ProductMovements[];
   subProducts?: SubProducts[];
 }

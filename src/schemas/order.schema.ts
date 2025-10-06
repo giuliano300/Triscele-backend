@@ -19,13 +19,13 @@ export class Order {
   status: OrderStatus;
 
   @Prop({ required: true })
-  insertDate: string;
+  insertDate: Date;
 
   @Prop({ required: true })
   paymentMethod: PaymentMethod;
 
   @Prop({ required: true })
-  expectedDelivery: string;
+  expectedDelivery: Date;
 
   @Prop({ required: true })
   origin: string;
@@ -69,11 +69,11 @@ export class Order {
   @Prop({ required: true })
   totalPrice: number;
 
-  @Prop({ required: true })
-  createdAt: Date;
+  @Prop()
+  createdAt?: Date;
 
-  @Prop({ required: true })
-  updatedAt: Date;
+  @Prop()
+  updatedAt?: Date;
 
 }
 

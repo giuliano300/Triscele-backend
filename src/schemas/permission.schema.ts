@@ -8,11 +8,11 @@ export class Permission {
   @Prop({ required: true, unique: true })
   name: string;
   
-  @Prop({ required: true })
-  createdAt: Date;
+  @Prop()
+  createdAt?: Date;
 
-  @Prop({ required: true })
-  updatedAt: Date;
+  @Prop()
+  updatedAt?: Date;
 }
 
 export const PermissionSchema = SchemaFactory.createForClass(Permission);

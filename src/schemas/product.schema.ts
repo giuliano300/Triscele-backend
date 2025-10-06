@@ -61,14 +61,15 @@ export class Product {
   @Prop()
   subProducts: SubProducts[];
   
-  @Prop({ required: true })
-  createdAt: Date;
+  @Prop()
+  createdAt?: Date;
+
+  @Prop()
+  updatedAt?: Date;
 
   @Prop({ required: true })
   stock: number;
 
-  @Prop({ required: true })
-  updatedAt: Date;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

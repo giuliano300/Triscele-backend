@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
 import { CreateOrderDto, UpdateOrderDto } from 'src/dto/order.dto';
 import { Order } from 'src/schemas/order.schema';
 import { OrderService } from 'src/services/order.service';
@@ -13,8 +13,13 @@ export class OrderController {
   }
 
   @Get()
-  findAll(): Promise<Order[]> {
-    return this.orderService.findAll();
+  findAll(
+    @Query('customerId') customerId?: string,
+    @Query('status') status?: string,
+    @Query('start') start?: string,
+    @Query('end') end?: string,
+  ): Promise<Order[]> {   
+    return this.orderService.findAll(customerId, status, start, end);
   }
 
   @Get(':id')
@@ -28,7 +33,7 @@ export class OrderController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<void> {
+  remove(@Param('id') id: string): Promise<boolean> {
     return this.orderService.remove(id);
   }
 }
