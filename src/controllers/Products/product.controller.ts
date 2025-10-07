@@ -20,11 +20,17 @@ export class ProductController {
   ): Promise<unknown[]> {
     return this.productService.findAll(categoryId, supplierId, name);
   }
+  
+  @Get('findLowStock')
+  findLowStock(): Promise<unknown> {
+    return this.productService.findLowStock();
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string): Promise<unknown> {
     return this.productService.findOne(id);
   }
+
 
   @Put(':id')
   update(@Param('id') id: string, @Body() dto: UpdateProductDto): Promise<Product> {

@@ -20,4 +20,13 @@ export class AuthController {
     }
     return this.authService.login(user);
   }
+
+  @Post('loginOperator')
+  async loginOperator(@Body() loginDto: LoginDto) {
+    const operator = await this.authService.validateOperator(loginDto.email, loginDto.password);
+    if (!operator) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    return this.authService.loginOperator(operator);
+  }
 }

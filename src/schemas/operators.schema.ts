@@ -9,10 +9,14 @@ class PermissionEmbedded {
 
   @Prop({ required: true })
   name: string;
+
+  @Prop({ required: true })
+  permissionName: string;
 }
 
 @Schema()
 export class Operator {
+
   @Prop({ required: true })
   businessName: string;
 
@@ -63,6 +67,7 @@ export class Operator {
 
   @Prop({ type: [PermissionEmbedded], default: [] })
   permissions: PermissionEmbedded[];
+
 }
 
 export const OperatorSchema = SchemaFactory.createForClass(Operator);

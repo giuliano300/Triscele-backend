@@ -10,5 +10,6 @@ import { Operator, OperatorSchema } from '../../schemas/operators.schema';
   ],
   controllers: [OperatorController],
   providers: [OperatorService],
+  exports: [OperatorService]
 })
 export class OperatorsModule {}

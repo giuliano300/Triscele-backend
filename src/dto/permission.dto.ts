@@ -6,4 +6,7 @@ export class PermissionDto {
 
   @IsString()
   name: string;
+
+  @IsString()
+  permissionName: string;
 }

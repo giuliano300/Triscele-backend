@@ -23,7 +23,7 @@ export class ProductService {
     return product.save();
   }
 
-async findAll(
+  async findAll(
   categoryId?: string,
   supplierId?: string, 
   name?: string
@@ -80,6 +80,56 @@ async findAll(
       })
     );
   }
+  
+  async findLowStock(): Promise<ProductViewModel[]> {
+    const products = await this.productModel
+      .find({
+        $expr: { $gt: ['$theshold', '$stock'] } // theshold > stock
+      })
+      .populate({ path: 'categoryId', select: 'name' })
+      .populate({ path: 'supplierId', select: 'name lastName supplierCode businessName' })
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
+
+    return await Promise.all(
+      products.map(async product => {
+        const category = product.categoryId as unknown as Category;
+        const supplier = product.supplierId as unknown as Supplier;
+
+        const productMovements = await this.productMovementModel
+          .find({ productId: String(product._id) })
+          .sort({ createdAt: -1 })
+          .exec();
+
+        return {
+          id: String(product._id),
+          name: product.name,
+          internalCode: product.internalCode,
+          price: product.price,
+          cost: product.cost,
+          theshold: product.theshold,
+          enabled: product.enabled,
+          stock_type: product.stock_type,
+          description: product.description,
+          files: product.files,
+          amazonCode: product.amazonCode,
+          ebayCode: product.ebayCode,
+          wcCode: product.wcCode,
+          manomanoCode: product.manomanoCode,
+          supplierCode: product.supplierCode,
+          categoryId: String(product.categoryId._id),
+          supplierId: String(product.supplierId._id),
+          category: category,
+          supplier: supplier,
+          stock: product.stock,
+          productMovements: productMovements,
+          subProducts: product.subProducts
+        };
+      })
+    );
+  }
+
 
   async findOne(id: string): Promise<ProductViewModel> {
     const product = await this.productModel

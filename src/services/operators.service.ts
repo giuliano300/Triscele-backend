@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -25,6 +26,19 @@ export class OperatorService {
     return this.OperatorModel.find()
           .sort({ createdAt: -1 })
           .exec();
+  }
+
+  async findByEmailPwd(email: string, pwd: string): Promise<any | null> {
+    const operator = await this.OperatorModel.findOne({ email, pwd }).exec();
+    if (!operator) return null;
+
+    return {
+      id: operator._id,
+      businessName: operator.businessName,
+      name: operator.name,
+      email: operator.email,
+      permissions: operator.permissions
+    };  
   }
 
   // Recupera un Operator per ID

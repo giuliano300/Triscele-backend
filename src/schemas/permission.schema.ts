@@ -9,6 +9,9 @@ export class Permission {
   name: string;
   
   @Prop()
+  permissionName: string;
+  
+  @Prop()
   createdAt?: Date;
 
   @Prop()

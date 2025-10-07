@@ -33,13 +33,21 @@ export class OrderService {
 
   async findAll(
     customerId?: string,
+    operatorId?: string,
     status?: string,
     start?: string,
     end?: string
   ): Promise<Order[]> {
     const filter: any = {};
 
-    if (customerId) filter.customerId = customerId;
+    if (customerId && Types.ObjectId.isValid(customerId)) {
+      filter.customerId = new Types.ObjectId(customerId);
+    }
+
+    if (operatorId && Types.ObjectId.isValid(operatorId)) {
+      filter.operatorId = new Types.ObjectId(operatorId);
+    }    
+    
     if (status) filter.status = status;
 
     if (start && end) {
@@ -59,7 +67,7 @@ export class OrderService {
     return this.orderModel
       .find(filter)
       .populate('customerId', 'name businessName')
-      .populate('operatorId', 'name')
+      .populate('operatorId', 'name businessName')
       .sort({ createdAt: -1 })
       .exec();
   }

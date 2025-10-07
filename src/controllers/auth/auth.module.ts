@@ -5,10 +5,12 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './jwt.strategy';
+import { OperatorsModule } from '../Operator/operators.module';
 
 @Module({
   imports: [
     UsersModule,
+    OperatorsModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'a-string-secret-at-least-256-bits-long',

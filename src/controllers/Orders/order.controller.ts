@@ -15,11 +15,12 @@ export class OrderController {
   @Get()
   findAll(
     @Query('customerId') customerId?: string,
+    @Query('operatorId') operatorId?: string,
     @Query('status') status?: string,
     @Query('start') start?: string,
     @Query('end') end?: string,
   ): Promise<Order[]> {   
-    return this.orderService.findAll(customerId, status, start, end);
+    return this.orderService.findAll(customerId, operatorId, status, start, end);
   }
 
   @Get(':id')
