@@ -32,12 +32,20 @@ export class OrderService {
   }
 
   async findAll(
+    page = 1,
+    limit = 20,
     customerId?: string,
     operatorId?: string,
     status?: string,
     start?: string,
     end?: string
-  ): Promise<Order[]> {
+  ): Promise<{
+      data: Order[];
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    }> {
     const filter: any = {};
 
     if (customerId && Types.ObjectId.isValid(customerId)) {
@@ -64,12 +72,30 @@ export class OrderService {
       };
     }
 
-    return this.orderModel
-      .find(filter)
-      .populate('customerId', 'name businessName')
-      .populate('operatorId', 'name businessName')
-      .sort({ createdAt: -1 })
-      .exec();
+    // Calcolo offset
+    const skip = (page - 1) * limit;
+
+  // Eseguo in parallelo il conteggio totale e il fetch dei dati
+    const [total, data] = await Promise.all([
+      this.orderModel.countDocuments(filter),
+      this.orderModel
+        .find(filter)
+        .populate('customerId', 'name businessName')
+        .populate('operatorId', 'name businessName')
+        .sort({ createdAt: -1, _id: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec()
+    ]);
+
+    // Restituisco i dati impaginati
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    };
   }
 
   async findOne(id: string): Promise<Order> {

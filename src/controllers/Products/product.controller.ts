@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { CreateProductDto, UpdateProductDto } from 'src/dto/product.dto';
 import { Product } from 'src/schemas/product.schema';
@@ -13,17 +14,34 @@ export class ProductController {
   }
 
   @Get()
-  findAll(
+  async getAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,
     @Query('categoryId') categoryId?: string,
     @Query('supplierId') supplierId?: string,
-    @Query('name') name?: string,
-  ): Promise<unknown[]> {
-    return this.productService.findAll(categoryId, supplierId, name);
-  }
-  
+    @Query('name') name?: string
+  ) 
+  {
+    return this.productService.findAll(+page, +limit, categoryId, supplierId, name);
+  }  
+
   @Get('findLowStock')
   findLowStock(): Promise<unknown> {
     return this.productService.findLowStock();
+  }
+
+  @Get('findProductsForSelect')
+  findProductsForSelect(): Promise<unknown> {
+    return this.productService.findProductsForSelect();
+  }
+
+  @Get('findProductsByName')
+  async getProductsByName(@Query('name') name: string): Promise<any[]> {
+    // blocca se meno di 2 caratteri
+    if (!name || name.trim().length < 2) {
+      return [];
+    }
+    return this.productService.getProductsByName(name);
   }
 
   @Get(':id')

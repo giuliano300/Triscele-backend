@@ -14,13 +14,22 @@ export class OrderController {
 
   @Get()
   findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 20,    
     @Query('customerId') customerId?: string,
     @Query('operatorId') operatorId?: string,
     @Query('status') status?: string,
     @Query('start') start?: string,
     @Query('end') end?: string,
-  ): Promise<Order[]> {   
-    return this.orderService.findAll(customerId, operatorId, status, start, end);
+  ): Promise<{
+    data: Order[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> 
+  {   
+    return this.orderService.findAll(+page, +limit, customerId, operatorId, status, start, end);
   }
 
   @Get(':id')

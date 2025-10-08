@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -24,33 +25,52 @@ export class ProductService {
   }
 
   async findAll(
-  categoryId?: string,
-  supplierId?: string, 
-  name?: string
-): Promise<ProductViewModel[]> {
-    // Creo il filtro dinamico
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    page = 1,
+    limit = 20,
+    categoryId?: string,
+    supplierId?: string,
+    name?: string
+  ): Promise<{
+    data: ProductViewModel[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
     const filter: any = {};
     if (categoryId) filter.categoryId = categoryId;
     if (supplierId) filter.supplierId = supplierId;
     if (name) filter.name = { $regex: name, $options: 'i' };
-    
-    const products = await this.productModel
-      .find(filter)      
-      .populate({ path: 'categoryId', select: 'name' })
-      .populate({ path: 'supplierId', select: 'name lastName supplierCode businessName' })
-      .sort({ createdAt: -1 })
-      .lean()
-      .exec();
 
-    return await Promise.all(
+    // Calcolo offset
+    const skip = (page - 1) * limit;
+
+    // Eseguo due query in parallelo: count e data
+    const [total, products] = await Promise.all([
+      this.productModel.countDocuments(filter),
+      this.productModel
+        .find(filter)
+        .populate({ path: 'categoryId', select: 'name' })
+        .populate({
+          path: 'supplierId',
+          select: 'name lastName supplierCode businessName'
+        })
+        .sort({ createdAt: -1, _id: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean()
+        .exec()
+    ]);
+
+    // Mappo i prodotti con dati aggiuntivi
+    const data = await Promise.all(
       products.map(async product => {
         const category = product.categoryId as unknown as Category;
         const supplier = product.supplierId as unknown as Supplier;
 
         const productMovements = await this.productMovementModel
           .find({ productId: String(product._id) })
-          .sort({ createdAt: -1 })
+          .sort({ createdAt: -1, _id: -1 })
           .exec();
 
         return {
@@ -71,14 +91,61 @@ export class ProductService {
           supplierCode: product.supplierCode,
           categoryId: String(product.categoryId._id),
           supplierId: String(product.supplierId._id),
-          category: category,
-          supplier: supplier,
+          category,
+          supplier,
           stock: product.stock,
-          productMovements: productMovements,
+          productMovements,
           subProducts: product.subProducts
         };
       })
     );
+
+    // Restituisco i dati impaginati
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    };
+  }
+    
+
+  async findProductsForSelect(): Promise<any[]> {
+    const products = await this.productModel
+      .find()      
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
+
+    return await Promise.all(
+      products.map(async product => {
+        return {
+          id: String(product._id),
+          name: product.name,
+          internalCode: product.internalCode,
+          price: product.price,
+        };
+      })
+    );
+  }
+
+  async getProductsByName(name: string): Promise<any[]> {
+    const products = await this.productModel
+      .find({ name: { $regex: name, $options: 'i' } })
+      .populate({ path: 'supplierId', select: 'name lastName supplierCode businessName' , options: { lean: true }})
+      .limit(20) 
+      .lean()
+      .exec();
+
+    return products.map((p) => ({
+      id: String(p._id),
+      name: p.name,
+      internalCode: p.internalCode,
+      price: p.price,
+      supplierCode: p.supplierCode,
+      supplierName: (p.supplierId as any).businessName!
+    }));
   }
   
   async findLowStock(): Promise<ProductViewModel[]> {
