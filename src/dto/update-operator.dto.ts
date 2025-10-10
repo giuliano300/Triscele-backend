@@ -48,6 +48,9 @@ export class UpdateOperatorDto {
   @IsString()
   pwd: string;
 
+  @IsString()
+  sectorId: string;
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => PermissionDto)

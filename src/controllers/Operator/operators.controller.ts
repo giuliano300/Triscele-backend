@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
 import { CreateOperatorDto } from 'src/dto/create-operator.dto';
 import { UpdateOperatorDto } from 'src/dto/update-operator.dto';
 import { Operator } from 'src/schemas/operators.schema';
@@ -15,8 +15,10 @@ export class OperatorController {
   }
 
   @Get()
-  async findAll(): Promise<Operator[]> {
-    return this.OperatorService.findAll();
+  async findAll(    
+    @Query('sectorId') sectorId?: string,
+  ): Promise<Operator[]> {
+    return this.OperatorService.findAll(sectorId);
   }
 
   @Get(':id')

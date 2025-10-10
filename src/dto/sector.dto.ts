@@ -6,8 +6,5 @@ export class SectorDto {
   name: string;
 
   @IsString()
-  id: string;
-
-  @IsString()
   description: string;
 }

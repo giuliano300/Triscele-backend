@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateOperatorDto } from 'src/dto/create-operator.dto';
@@ -22,9 +22,18 @@ export class OperatorService {
   }
 
   // Recupera tutti i Operator
-  async findAll(): Promise<Operator[]> {
-    return this.OperatorModel.find()
-          .sort({ createdAt: -1 })
+  async findAll(
+    @Query('sectorId') sectorId?: string,
+    
+  ): Promise<Operator[]> {
+
+    const filter: any = {};
+
+    if (sectorId) filter.sectorId = sectorId;
+
+    return this.OperatorModel.find(filter)
+         .populate({ path: 'sectorId', select: 'name' })
+         .sort({ createdAt: -1 })
           .exec();
   }
 
@@ -37,7 +46,8 @@ export class OperatorService {
       businessName: operator.businessName,
       name: operator.name,
       email: operator.email,
-      permissions: operator.permissions
+      permissions: operator.permissions,
+      sectorId: operator.sectorId
     };  
   }
 

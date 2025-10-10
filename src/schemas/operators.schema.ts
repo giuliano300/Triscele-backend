@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+import { Sector } from './sector.schema';
 
 export type OperatorDocument = Operator & Document;
 
@@ -56,6 +57,9 @@ export class Operator {
   @Prop({ required: true })
   pwd: string;
 
+  @Prop({ type: Types.ObjectId, ref: Sector.name, required: true })
+  sectorId?: Types.ObjectId;
+  
   @Prop()
   gender: string;
   
