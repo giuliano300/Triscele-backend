@@ -11,6 +11,9 @@ export class CreateOrderDto {
   @IsString()
   operatorId: string;
 
+  @IsString()
+  sectorId?: string;
+
   @IsNotEmpty()
   @IsEnum(OrderStatus)
   status: OrderStatus;
@@ -57,6 +60,7 @@ export class CreateOrderDto {
   shippingEmail: string;
 
   note?: string;
+  customerNote?: string;
 
   @IsNotEmpty()
   @IsArray()

@@ -6,6 +6,7 @@ export enum OrderStatus {
   CANCELLATO = 5,
   FALLITO = 6,
   SPEDITO = 10,
+  PREVENTIVO = 11,
   CONSEGNATO = 14,
   COMPLETATO_DUPLICATO = 15,
   IN_CONSEGNA = 16

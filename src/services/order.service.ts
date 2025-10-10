@@ -82,6 +82,7 @@ export class OrderService {
         .find(filter)
         .populate('customerId', 'name businessName')
         .populate('operatorId', 'name businessName')
+        .populate('sectorId', 'name')
         .sort({ createdAt: -1, _id: -1 })
         .skip(skip)
         .limit(limit)
@@ -103,6 +104,7 @@ export class OrderService {
       .findById(id)
       .populate('customerId', 'name')
       .populate('operatorId', 'name')
+      .populate('sectorId', 'name')
       .exec();
 
     if (!order) {

@@ -40,6 +40,9 @@ export class CreateCustomerDto {
   address: string;
 
   @IsString()
+  customerNote?: string;
+
+  @IsString()
   zipCode: string;
 
   @IsString()

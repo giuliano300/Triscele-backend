@@ -76,7 +76,6 @@ export class ProductService {
         return {
           id: String(product._id),
           name: product.name,
-          internalCode: product.internalCode,
           price: product.price,
           cost: product.cost,
           theshold: product.theshold,
@@ -84,10 +83,7 @@ export class ProductService {
           stock_type: product.stock_type,
           description: product.description,
           files: product.files,
-          amazonCode: product.amazonCode,
-          ebayCode: product.ebayCode,
-          wcCode: product.wcCode,
-          manomanoCode: product.manomanoCode,
+          purchasePackage: product.purchasePackage,
           supplierCode: product.supplierCode,
           categoryId: String(product.categoryId._id),
           supplierId: String(product.supplierId._id),
@@ -123,7 +119,6 @@ export class ProductService {
         return {
           id: String(product._id),
           name: product.name,
-          internalCode: product.internalCode,
           price: product.price,
         };
       })
@@ -141,10 +136,10 @@ export class ProductService {
     return products.map((p) => ({
       id: String(p._id),
       name: p.name,
-      internalCode: p.internalCode,
       price: p.price,
       supplierCode: p.supplierCode,
-      supplierName: (p.supplierId as any).businessName!
+      supplierName: (p.supplierId as any).businessName!,
+      subProducts: p.subProducts
     }));
   }
   
@@ -172,7 +167,6 @@ export class ProductService {
         return {
           id: String(product._id),
           name: product.name,
-          internalCode: product.internalCode,
           price: product.price,
           cost: product.cost,
           theshold: product.theshold,
@@ -180,10 +174,7 @@ export class ProductService {
           stock_type: product.stock_type,
           description: product.description,
           files: product.files,
-          amazonCode: product.amazonCode,
-          ebayCode: product.ebayCode,
-          wcCode: product.wcCode,
-          manomanoCode: product.manomanoCode,
+          purchasePackage: product.purchasePackage,
           supplierCode: product.supplierCode,
           categoryId: String(product.categoryId._id),
           supplierId: String(product.supplierId._id),
@@ -215,7 +206,6 @@ export class ProductService {
     return {
       id: String(product._id),
       name: product.name,
-      internalCode: product.internalCode,
       price: product.price,
       cost: product.cost,
       theshold: product.theshold,
@@ -223,10 +213,7 @@ export class ProductService {
       stock_type: product.stock_type,
       description: product.description,
       files: product.files,
-      amazonCode: product.amazonCode,
-      ebayCode: product.ebayCode,
-      wcCode: product.wcCode,
-      manomanoCode: product.manomanoCode,
+      purchasePackage: product.purchasePackage,
       supplierCode: product.supplierCode,
       categoryId: String(product.categoryId._id),
       supplierId: String(product.supplierId._id),

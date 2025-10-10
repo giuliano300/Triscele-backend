@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -23,8 +24,25 @@ export class CustomerService {
   }
 
   // Recupera tutti i customer
-  async findAll(): Promise<Customer[]> {
-    return this.customerModel.find()      
+  async findAll(
+    name?: string,
+    province?: string,
+
+  ): Promise<Customer[]> {
+
+    const filter: any = {};
+    
+if (name) {
+    const regex = new RegExp(name, 'i'); // 'i' = case insensitive
+    filter.$or = [
+      { name: regex },
+      { lastName: regex },
+      { businessName: regex },
+    ];
+  }    
+  if (province) filter.province = province;
+
+    return this.customerModel.find(filter)      
           .sort({ createdAt: -1 })
           .exec();
   }

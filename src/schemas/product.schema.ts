@@ -11,9 +11,6 @@ export class Product {
   @Prop({ required: true, unique: true })
   name: string;
 
-  @Prop({ required: true })
-  internalCode: string;
-
   // cambio da string a ObjectId con ref
   @Prop({ type: Types.ObjectId, ref: Category.name, required: true })
   categoryId: Types.ObjectId;
@@ -44,19 +41,10 @@ export class Product {
   description: string;
 
   @Prop()
+  purchasePackage?: string;
+
+  @Prop()
   files: unknown[];
-
-  @Prop()
-  amazonCode: string;
-
-  @Prop()
-  ebayCode: string;
-
-  @Prop()
-  wcCode: string;
-
-  @Prop()
-  manomanoCode: string;
   
   @Prop()
   subProducts: SubProducts[];

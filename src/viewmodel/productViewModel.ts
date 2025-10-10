@@ -6,7 +6,6 @@ import { Supplier } from "src/schemas/suppliers.schema";
 export interface ProductViewModel {
   id: string;
   name: string;
-  internalCode: string;
   price: number;
   cost: number;
   theshold: number;
@@ -14,10 +13,7 @@ export interface ProductViewModel {
   stock_type: string;
   description?: string;
   files?: unknown[];
-  amazonCode?: string;
-  ebayCode?: string;
-  wcCode?: string;
-  manomanoCode?: string;
+  purchasePackage?: string;
   supplierCode?: string;
   categoryId?: string;
   supplierId?: string;

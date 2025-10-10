@@ -7,9 +7,6 @@ export class CreateProductDto {
   name: string;
 
   @IsString()
-  internalCode: string;
-
-  @IsString()
   categoryId: string;
 
   @IsNumber()
@@ -48,19 +45,8 @@ export class CreateProductDto {
 
   @IsOptional()
   @IsString()
-  amazonCode?: string;
+  purchasePackage?: string;
 
-  @IsOptional()
-  @IsString()
-  ebayCode?: string;
-
-  @IsOptional()
-  @IsString()
-  wcCode?: string;
-
-  @IsOptional()
-  @IsString()
-  manomanoCode?: string;
 }
 
 export class UpdateProductDto extends CreateProductDto {}

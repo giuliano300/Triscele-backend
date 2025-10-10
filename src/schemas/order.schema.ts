@@ -4,6 +4,7 @@ import { Customer } from './customers.schema';
 import { Operator } from './operators.schema';
 import { OrderStatus, PaymentMethod } from 'src/enum/enum';
 import { OrderProducts } from 'src/interfaces/orderProduct';
+import { Sector } from './sector.schema';
 
 export type OrderDocument = Order & Document;
 
@@ -60,8 +61,14 @@ export class Order {
   @Prop({ required: true })
   shippingEmail: string;
 
+  @Prop({ type: Types.ObjectId, ref: Sector.name, required: true })
+  sectorId?: Types.ObjectId;
+
   @Prop()
   note: string;
+
+  @Prop()
+  customerNote?: string;
 
   @Prop({ required: true })
   orderProducts: OrderProducts[];

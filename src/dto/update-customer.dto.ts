@@ -45,6 +45,9 @@ export class UpdateCustomerDto {
   zipCode: string;
 
   @IsString()
+  customerNote?: string;
+
+  @IsString()
   city: string;
 
   @IsOptional()

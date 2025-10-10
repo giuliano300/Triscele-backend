@@ -19,6 +19,9 @@ export class Customer {
   
   @Prop()
   mobile: string;
+
+  @Prop()
+  customerNote?: string;
  
   @Prop()
   sdi: string;
