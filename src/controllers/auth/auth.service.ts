@@ -30,6 +30,7 @@ export class AuthService {
       name: o.businessName, 
       sub: o.id, 
       role: 'operator', 
+      sectorId: o.sectorId,
       permission: o.permissions 
     };
     return {

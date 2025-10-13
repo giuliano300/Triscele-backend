@@ -5,6 +5,8 @@ import { Operator } from './operators.schema';
 import { OrderStatus, PaymentMethod } from 'src/enum/enum';
 import { OrderProducts } from 'src/interfaces/orderProduct';
 import { Sector } from './sector.schema';
+import { IsOptional } from 'class-validator';
+import { OrderChangeState } from 'src/interfaces/order-change-state';
 
 export type OrderDocument = Order & Document;
 
@@ -13,8 +15,9 @@ export class Order {
   @Prop({ type: Types.ObjectId, ref: Customer.name, required: true })
   customerId: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: Operator.name, required: true })
-  operatorId: Types.ObjectId;
+  @IsOptional()
+  @Prop({ type: Types.ObjectId, ref: Operator.name })
+  operatorId?: Types.ObjectId;
 
   @Prop({ required: true })
   status: OrderStatus;
@@ -65,7 +68,7 @@ export class Order {
   sectorId?: Types.ObjectId;
 
   @Prop()
-  note: string;
+  note?: string;
 
   @Prop()
   customerNote?: string;
@@ -81,6 +84,9 @@ export class Order {
 
   @Prop()
   updatedAt?: Date;
+
+  @Prop()
+  orderChangeState: OrderChangeState[];
 
 }
 

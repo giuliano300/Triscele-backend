@@ -18,6 +18,7 @@ export class OrderController {
     @Query('limit') limit = 20,    
     @Query('customerId') customerId?: string,
     @Query('operatorId') operatorId?: string,
+    @Query('sectorId') sectorId?: string,
     @Query('status') status?: string,
     @Query('start') start?: string,
     @Query('end') end?: string,
@@ -29,7 +30,7 @@ export class OrderController {
     totalPages: number;
   }> 
   {   
-    return this.orderService.findAll(+page, +limit, customerId, operatorId, status, start, end);
+    return this.orderService.findAll(+page, +limit, customerId, operatorId, sectorId, status, start, end);
   }
 
   @Get(':id')

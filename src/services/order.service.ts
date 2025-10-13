@@ -3,6 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateOrderDto, UpdateOrderDto } from 'src/dto/order.dto';
+import { OrderChangeState } from 'src/interfaces/order-change-state';
 import { Order, OrderDocument } from 'src/schemas/order.schema';
 import { Product, ProductDocument } from 'src/schemas/product.schema';
 
@@ -17,7 +18,8 @@ export class OrderService {
     const createdOrder = new this.orderModel({
       ...dto,
       customerId: new Types.ObjectId(dto.customerId),
-      operatorId: new Types.ObjectId(dto.operatorId),
+      operatorId: dto.operatorId  ? new Types.ObjectId(dto.operatorId) : '',
+      sectorId: new Types.ObjectId(dto.sectorId),
       createdAt: new Date()
     });
 
@@ -36,6 +38,7 @@ export class OrderService {
     limit = 20,
     customerId?: string,
     operatorId?: string,
+    sectorId?: string,
     status?: string,
     start?: string,
     end?: string
@@ -52,11 +55,19 @@ export class OrderService {
       filter.customerId = new Types.ObjectId(customerId);
     }
 
+    if (sectorId && Types.ObjectId.isValid(sectorId)) {
+      filter.sectorId = new Types.ObjectId(sectorId);
+    }
+
     if (operatorId && Types.ObjectId.isValid(operatorId)) {
-      filter.operatorId = new Types.ObjectId(operatorId);
-    }    
-    
-    if (status) filter.status = status;
+      // operatorId specificato o null
+      filter.$or = [
+        { operatorId: null },
+        { operatorId: new Types.ObjectId(operatorId) }
+      ];
+    }
+
+  if (status) filter.status = status;
 
     if (start && end) {
       const s = new Date(start);
@@ -102,8 +113,8 @@ export class OrderService {
   async findOne(id: string): Promise<Order> {
     const order = await this.orderModel
       .findById(id)
-      .populate('customerId', 'name')
-      .populate('operatorId', 'name')
+      .populate('customerId', 'name businessName')
+      .populate('operatorId', 'name businessName')
       .populate('sectorId', 'name')
       .exec();
 
@@ -114,19 +125,21 @@ export class OrderService {
     return order;
   }
 
-  async update(id: string, dto: UpdateOrderDto): Promise<Order> {
+  async update(id: string, dto: UpdateOrderDto, operatorId?: string): Promise<Order> {
     const existingOrder = await this.orderModel.findById(id);
     if (!existingOrder) {
       throw new NotFoundException(`Order ${id} non trovato`);
     }
 
+    // 1️⃣ Ripristino stock dei vecchi prodotti
     for (const oldProd of existingOrder.orderProducts) {
       await this.productModel.updateOne(
         { _id: oldProd._id },
-        { $inc: { stock: oldProd.quantity } } 
+        { $inc: { stock: oldProd.quantity } }
       );
     }
 
+    // 2️⃣ Aggiornamento stock dei nuovi prodotti
     for (const newProd of dto.orderProducts) {
       await this.productModel.updateOne(
         { _id: newProd._id },
@@ -134,16 +147,31 @@ export class OrderService {
       );
     }
 
-    const updated = await this.orderModel.findByIdAndUpdate(
-      id,
-      {
-        ...dto,
-        customerId: new Types.ObjectId(dto.customerId),
-        operatorId: new Types.ObjectId(dto.operatorId),
-        updatedAt: new Date(),
-      },
-      { new: true },
-    );
+    // 3️⃣ Tracciamento cambio status
+    const changeState: OrderChangeState[] = existingOrder.orderChangeState || [];
+    if (dto.status && dto.status !== existingOrder.status) {
+      changeState.push({
+        orderState: existingOrder.status,  // lo stato precedente
+        orderId: (existingOrder._id as Types.ObjectId).toString(),
+        oldStatus: existingOrder.status,
+        newStatus: dto.status,
+        changedAt: new Date(),
+        operatorId: operatorId, // opzionale, chi fa la modifica
+      });
+    }
+
+    // 4️⃣ Aggiornamento ordine
+    const updateData: any = {
+      ...dto,
+      customerId: new Types.ObjectId(dto.customerId),
+      sectorId: new Types.ObjectId(dto.sectorId),
+      updatedAt: new Date(),
+      orderChangeState: changeState,
+    };
+
+   updateData.operatorId = dto.operatorId ? new Types.ObjectId(dto.operatorId) : null;
+
+    const updated = await this.orderModel.findByIdAndUpdate(id, updateData, { new: true });
 
     return updated as Order;
   }

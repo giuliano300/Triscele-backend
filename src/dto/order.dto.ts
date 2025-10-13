@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsEnum, IsNumber, IsArray } from 'class-validator';
+import { IsNotEmpty, IsString, IsEnum, IsNumber, IsArray, IsOptional } from 'class-validator';
 import { OrderStatus, PaymentMethod } from 'src/enum/enum';
 import { OrderProducts } from 'src/interfaces/orderProduct';
 
@@ -7,9 +7,9 @@ export class CreateOrderDto {
   @IsString()
   customerId: string;
 
-  @IsNotEmpty()
   @IsString()
-  operatorId: string;
+  @IsOptional()
+  operatorId?: string;
 
   @IsString()
   sectorId?: string;

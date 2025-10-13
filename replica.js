@@ -13,7 +13,7 @@ async function run() {
   try {
     await client.connect();
     const db = client.db("triscele");
-    const collection = db.collection("orders");
+    const collection = db.collection("products");
 
     // Trova un ordine esistente da clonare
     const original = await collection.findOne();
@@ -23,7 +23,7 @@ async function run() {
     delete original._id;
 
     const batchSize = 1000; // inserimenti a blocchi per non saturare la memoria
-    const totalOrders = 13959225;
+    const totalOrders = 1500;
     let inserted = 0;
 
     while (inserted < totalOrders) {
@@ -32,12 +32,11 @@ async function run() {
 
       for (let i = 0; i < limit; i++) {
         const insertDate = randomDateIn2025();
-        const expectedDelivery = randomDateIn2025();
 
         docs.push({
           ...original,
+          name: original.name + "_" + i,
           insertDate,
-          expectedDelivery,
           createdAt: insertDate,
           updatedAt: insertDate
         });
