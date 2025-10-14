@@ -52,11 +52,11 @@ export class CategoriesService {
   }
 
   // Rimuove una Category per ID
-  async remove(id: string): Promise<Category> {
+  async remove(id: string): Promise<boolean> {
     const cat = await this.categoriesModel.findByIdAndDelete(id).exec();
-    if (!cat) {
-      throw new NotFoundException(`Category con ID ${id} non trovato`);
-    }
-    return cat;
+    if (!cat)
+      return false;
+    
+    return true;
   }
 }

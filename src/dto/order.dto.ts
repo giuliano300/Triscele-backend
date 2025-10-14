@@ -28,12 +28,8 @@ export class CreateOrderDto {
   @IsNotEmpty()
   expectedDelivery: Date;
 
-  @IsNotEmpty()
-  origin: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  agent: number;
+  @IsString()
+  agentId?: string;
 
   @IsNotEmpty()
   shippingAddress: string;

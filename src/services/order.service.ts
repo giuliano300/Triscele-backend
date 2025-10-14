@@ -1,8 +1,10 @@
+/* eslint-disable no-dupe-else-if */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateOrderDto, UpdateOrderDto } from 'src/dto/order.dto';
+import { OrderStatus } from 'src/enum/enum';
 import { OrderChangeState } from 'src/interfaces/order-change-state';
 import { Order, OrderDocument } from 'src/schemas/order.schema';
 import { Product, ProductDocument } from 'src/schemas/product.schema';
@@ -18,7 +20,7 @@ export class OrderService {
     const createdOrder = new this.orderModel({
       ...dto,
       customerId: new Types.ObjectId(dto.customerId),
-      operatorId: dto.operatorId  ? new Types.ObjectId(dto.operatorId) : '',
+      operatorId: dto.operatorId  ? new Types.ObjectId(dto.operatorId) : null,
       sectorId: new Types.ObjectId(dto.sectorId),
       createdAt: new Date()
     });
@@ -41,7 +43,8 @@ export class OrderService {
     sectorId?: string,
     status?: string,
     start?: string,
-    end?: string
+    end?: string,
+    admin?: string
   ): Promise<{
       data: Order[];
       total: number;
@@ -50,6 +53,8 @@ export class OrderService {
       totalPages: number;
     }> {
     const filter: any = {};
+    const isAdmin = admin === 'true';
+
 
     if (customerId && Types.ObjectId.isValid(customerId)) {
       filter.customerId = new Types.ObjectId(customerId);
@@ -59,15 +64,27 @@ export class OrderService {
       filter.sectorId = new Types.ObjectId(sectorId);
     }
 
-    if (operatorId && Types.ObjectId.isValid(operatorId)) {
-      // operatorId specificato o null
-      filter.$or = [
-        { operatorId: null },
-        { operatorId: new Types.ObjectId(operatorId) }
-      ];
+    if (!isAdmin) {
+      // Se non è admin → mostra solo ordini senza operatore o con il suo ID
+      if (operatorId && Types.ObjectId.isValid(operatorId)) {
+        filter.$or = [
+          { operatorId: null },
+          { operatorId: new Types.ObjectId(operatorId) }
+        ];
+      }
+    } 
+    else 
+    {
+      // Se è admin → filtra solo per operatorId (se fornito)
+      if (operatorId && Types.ObjectId.isValid(operatorId)) {
+        filter.operatorId = new Types.ObjectId(operatorId);
+      }
     }
 
-  if (status) filter.status = status;
+    if (status) 
+      filter.status = status;
+    else
+      filter.status = { $ne: OrderStatus.PREVENTIVO }; 
 
     if (start && end) {
       const s = new Date(start);
@@ -124,6 +141,30 @@ export class OrderService {
 
     return order;
   }
+ 
+  async convertToOrder(dto: any): Promise<Order> {
+      const existingOrder = await this.orderModel.findById(dto.orderId);
+      if (!existingOrder) {
+        throw new NotFoundException(`Order ${dto.orderId} non trovato`);
+      }
+
+      const updateData: any = {
+        sectorId: Types.ObjectId.createFromHexString(dto.sectorId),
+        updatedAt: new Date(),
+        status: dto.status,
+        operatorId: dto.operatorId
+          ? Types.ObjectId.createFromHexString(dto.operatorId)
+          : null
+      };
+
+      const updated = await this.orderModel.findByIdAndUpdate(
+        dto.orderId,
+        { $set: updateData },
+        { new: true }
+      );
+
+      return updated as Order;
+  };
 
   async update(id: string, dto: UpdateOrderDto, operatorId?: string): Promise<Order> {
     const existingOrder = await this.orderModel.findById(id);

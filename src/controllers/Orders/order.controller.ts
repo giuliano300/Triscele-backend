@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
 import { CreateOrderDto, UpdateOrderDto } from 'src/dto/order.dto';
 import { Order } from 'src/schemas/order.schema';
@@ -22,6 +23,7 @@ export class OrderController {
     @Query('status') status?: string,
     @Query('start') start?: string,
     @Query('end') end?: string,
+    @Query('admin') admin?: string,
   ): Promise<{
     data: Order[];
     total: number;
@@ -30,7 +32,7 @@ export class OrderController {
     totalPages: number;
   }> 
   {   
-    return this.orderService.findAll(+page, +limit, customerId, operatorId, sectorId, status, start, end);
+    return this.orderService.findAll(+page, +limit, customerId, operatorId, sectorId, status, start, end, admin);
   }
 
   @Get(':id')
@@ -41,6 +43,11 @@ export class OrderController {
   @Put(':id')
   update(@Param('id') id: string, @Body() dto: UpdateOrderDto): Promise<Order> {
     return this.orderService.update(id, dto);
+  }
+
+  @Post('convertToOrder')
+  convertToOrder( @Body() dto: any): Promise<Order> {
+    return this.orderService.convertToOrder(dto);
   }
 
   @Delete(':id')

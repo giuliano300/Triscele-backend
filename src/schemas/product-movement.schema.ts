@@ -22,6 +22,15 @@ export class ProductMovements {
   @Prop()
   updatedAt?: Date;
 
+  @Prop()
+  supplierId?: string;
+
+  @Prop()
+  supplierName?: string;
+
+  @Prop()
+  supplierCode?: string;
+
 }
 
 export const ProductMovementSchema = SchemaFactory.createForClass(ProductMovements);

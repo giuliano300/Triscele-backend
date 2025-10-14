@@ -13,7 +13,7 @@ async function run() {
   try {
     await client.connect();
     const db = client.db("triscele");
-    const collection = db.collection("products");
+    const collection = db.collection("orders");
 
     // Trova un ordine esistente da clonare
     const original = await collection.findOne();
@@ -23,7 +23,7 @@ async function run() {
     delete original._id;
 
     const batchSize = 1000; // inserimenti a blocchi per non saturare la memoria
-    const totalOrders = 1500;
+    const totalOrders = 150000;
     let inserted = 0;
 
     while (inserted < totalOrders) {

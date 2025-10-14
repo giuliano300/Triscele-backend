@@ -34,8 +34,8 @@ export class Order {
   @Prop({ required: true })
   origin: string;
 
-  @Prop({ required: true })
-  agent: number;
+  @Prop()
+  agentId: string;
 
   @Prop({ required: true })
   shippingAddress: string;

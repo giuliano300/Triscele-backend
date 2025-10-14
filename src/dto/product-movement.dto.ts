@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class ProductMovementsDto {
   @IsNumber()
@@ -9,4 +9,17 @@ export class ProductMovementsDto {
 
   @IsString()
   productId: string;
+
+  @IsOptional()
+  @IsString()
+  supplierId?: string;
+
+  @IsOptional()
+  @IsString()
+  supplierName?: string;
+  
+  @IsOptional()
+  @IsString()
+  supplierCode?: string;
+  
 }
