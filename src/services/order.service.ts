@@ -6,6 +6,7 @@ import { Model, Types } from 'mongoose';
 import { CreateOrderDto, UpdateOrderDto } from 'src/dto/order.dto';
 import { OrderStatus } from 'src/enum/enum';
 import { OrderChangeState } from 'src/interfaces/order-change-state';
+import { Operator, OperatorDocument } from 'src/schemas/operators.schema';
 import { Order, OrderDocument } from 'src/schemas/order.schema';
 import { Product, ProductDocument } from 'src/schemas/product.schema';
 
@@ -13,7 +14,9 @@ import { Product, ProductDocument } from 'src/schemas/product.schema';
 export class OrderService {
   constructor(
     @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
-    @InjectModel(Product.name) private productModel: Model<ProductDocument>
+    @InjectModel(Product.name) private productModel: Model<ProductDocument>,
+    @InjectModel(Operator.name) private operatorModel: Model<OperatorDocument>,
+    
   ) {}
 
   async create(dto: CreateOrderDto): Promise<Order> {
@@ -191,13 +194,25 @@ export class OrderService {
     // 3️⃣ Tracciamento cambio status
     const changeState: OrderChangeState[] = existingOrder.orderChangeState || [];
     if (dto.status && dto.status !== existingOrder.status) {
+      let operatorName = "";
+
+      if (operatorId) {
+        const operator = await this.operatorModel.findById(operatorId).select('lastName name businessName');
+        if (operator) {
+          operatorName = operator.businessName
+            ? operator.businessName
+            : `${operator.name || ''} ${operator.lastName || ''}`.trim();
+        }
+      }
+
       changeState.push({
-        orderState: existingOrder.status,  // lo stato precedente
+        orderState: existingOrder.status,  // stato precedente
         orderId: (existingOrder._id as Types.ObjectId).toString(),
         oldStatus: existingOrder.status,
         newStatus: dto.status,
         changedAt: new Date(),
-        operatorId: operatorId, // opzionale, chi fa la modifica
+        operatorId: operatorId,
+        operatorName: operatorName || 'Amministrazione'
       });
     }
 

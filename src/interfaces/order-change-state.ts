@@ -20,4 +20,8 @@ export class OrderChangeState {
   @IsOptional()
   @IsString()
   operatorId?: string;
+
+  @IsOptional()
+  @IsString()
+  operatorName?: string;
 }

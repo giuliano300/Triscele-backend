@@ -41,8 +41,12 @@ export class OrderController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateOrderDto): Promise<Order> {
-    return this.orderService.update(id, dto);
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateOrderDto,
+    @Query('operatorId') operatorId?: string
+  ): Promise<Order> {
+    return this.orderService.update(id, dto, operatorId);
   }
 
   @Post('convertToOrder')
