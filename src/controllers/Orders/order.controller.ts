@@ -24,6 +24,7 @@ export class OrderController {
     @Query('start') start?: string,
     @Query('end') end?: string,
     @Query('admin') admin?: string,
+    @Query('preventivo') preventivo?: boolean,
   ): Promise<{
     data: Order[];
     total: number;
@@ -32,7 +33,7 @@ export class OrderController {
     totalPages: number;
   }> 
   {   
-    return this.orderService.findAll(+page, +limit, customerId, operatorId, sectorId, status, start, end, admin);
+    return this.orderService.findAll(+page, +limit, customerId, operatorId, sectorId, status, start, end, admin, preventivo);
   }
 
   @Get(':id')

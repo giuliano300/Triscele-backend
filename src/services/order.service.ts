@@ -4,9 +4,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateOrderDto, UpdateOrderDto } from 'src/dto/order.dto';
-import { OrderStatus } from 'src/enum/enum';
 import { OrderChangeState } from 'src/interfaces/order-change-state';
 import { Operator, OperatorDocument } from 'src/schemas/operators.schema';
+import { OrderState, OrderStateDocument } from 'src/schemas/order-state.schema';
 import { Order, OrderDocument } from 'src/schemas/order.schema';
 import { Product, ProductDocument } from 'src/schemas/product.schema';
 
@@ -16,6 +16,7 @@ export class OrderService {
     @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
     @InjectModel(Product.name) private productModel: Model<ProductDocument>,
     @InjectModel(Operator.name) private operatorModel: Model<OperatorDocument>,
+    @InjectModel(OrderState.name) private orderStateModel: Model<OrderStateDocument>,
     
   ) {}
 
@@ -47,7 +48,8 @@ export class OrderService {
     status?: string,
     start?: string,
     end?: string,
-    admin?: string
+    admin?: string,
+    preventivo?: boolean
   ): Promise<{
       data: Order[];
       total: number;
@@ -84,10 +86,16 @@ export class OrderService {
       }
     }
 
-    if (status) 
-      filter.status = status;
+
+    if(preventivo)
+      filter.status = null; 
     else
-      filter.status = { $ne: OrderStatus.PREVENTIVO }; 
+    {
+      if (status) 
+        filter.status = status;
+      else
+        filter.status = { $ne: null };
+    }
 
     if (start && end) {
       const s = new Date(start);
@@ -114,6 +122,7 @@ export class OrderService {
         .populate('customerId', 'name businessName')
         .populate('operatorId', 'name businessName')
         .populate('sectorId', 'name')
+        .populate('status', 'name color')
         .sort({ createdAt: -1, _id: -1 })
         .skip(skip)
         .limit(limit)
@@ -136,6 +145,7 @@ export class OrderService {
       .populate('customerId', 'name businessName')
       .populate('operatorId', 'name businessName')
       .populate('sectorId', 'name')
+      .populate('status', 'name color')
       .exec();
 
     if (!order) {
@@ -193,7 +203,8 @@ export class OrderService {
 
     // 3️⃣ Tracciamento cambio status
     const changeState: OrderChangeState[] = existingOrder.orderChangeState || [];
-    if (dto.status && dto.status !== existingOrder.status) {
+    if (dto.status && dto.status !== (existingOrder.status ? existingOrder.status.toString() : null)) 
+    {
       let operatorName = "";
 
       if (operatorId) {
@@ -206,9 +217,9 @@ export class OrderService {
       }
 
       changeState.push({
-        orderState: existingOrder.status,  // stato precedente
+        orderState: (existingOrder.status as Types.ObjectId).toString(),
         orderId: (existingOrder._id as Types.ObjectId).toString(),
-        oldStatus: existingOrder.status,
+        oldStatus: (existingOrder.status as Types.ObjectId).toString(),
         newStatus: dto.status,
         changedAt: new Date(),
         operatorId: operatorId,

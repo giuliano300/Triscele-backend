@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString, IsEnum, IsNumber, IsArray, IsOptional } from 'class-validator';
-import { OrderStatus, PaymentMethod } from 'src/enum/enum';
+import { PaymentMethod } from 'src/enum/enum';
 import { OrderProducts } from 'src/interfaces/orderProduct';
 
 export class CreateOrderDto {
@@ -14,9 +14,8 @@ export class CreateOrderDto {
   @IsString()
   sectorId?: string;
 
-  @IsNotEmpty()
-  @IsEnum(OrderStatus)
-  status: OrderStatus;
+  @IsString()
+  status?: string;
 
   @IsNotEmpty()
   insertDate: Date;

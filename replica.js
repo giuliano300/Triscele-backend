@@ -23,7 +23,7 @@ async function run() {
     delete original._id;
 
     const batchSize = 1000; // inserimenti a blocchi per non saturare la memoria
-    const totalOrders = 150000;
+    const totalOrders = 35000;
     let inserted = 0;
 
     while (inserted < totalOrders) {

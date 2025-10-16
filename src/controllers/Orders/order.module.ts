@@ -5,12 +5,14 @@ import { Order, OrderSchema } from 'src/schemas/order.schema';
 import { OrderService } from 'src/services/order.service';
 import { Product, ProductSchema } from 'src/schemas/product.schema';
 import { Operator, OperatorSchema } from 'src/schemas/operators.schema';
+import { OrderState, OrderStateSchema } from 'src/schemas/order-state.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
     MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
-    MongooseModule.forFeature([{ name: Operator.name, schema: OperatorSchema }])
+    MongooseModule.forFeature([{ name: Operator.name, schema: OperatorSchema }]),
+    MongooseModule.forFeature([{ name: OrderState.name, schema: OrderStateSchema }])
   ],
   providers: [OrderService],
   controllers: [OrderController],

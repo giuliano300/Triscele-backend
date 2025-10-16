@@ -15,6 +15,7 @@ import { ProductMovementModule } from './controllers/ProductMovements/productMov
 import { StatsModule } from './controllers/Stats/stats.module';
 import { SectorModule } from './controllers/Sectors/sectors.module';
 import { AgentModule } from './controllers/Agents/agents.module';
+import { OrderStateModule } from './controllers/OrderState/order-state.module';
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://localhost:27017/triscele'),
@@ -30,7 +31,8 @@ import { AgentModule } from './controllers/Agents/agents.module';
     ProductMovementModule,
     StatsModule,
     SectorModule,
-    AgentModule
+    AgentModule,
+    OrderStateModule
   ],
   controllers: [AppController],
     providers: [AppService],

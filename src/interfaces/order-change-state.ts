@@ -1,18 +1,17 @@
-import { IsDate, IsEnum, IsOptional, IsString } from "class-validator";
-import { OrderStatus } from "src/enum/enum";
+import { IsDate, IsOptional, IsString } from "class-validator";
 
 export class OrderChangeState {
-  @IsEnum(OrderStatus)
-  orderState: OrderStatus;
+  @IsString()
+  orderState: string;
   
   @IsString()
   orderId: string;
 
-  @IsEnum(OrderStatus)
-  oldStatus: OrderStatus;
+  @IsString()
+  oldStatus: string;
 
-  @IsEnum(OrderStatus)
-  newStatus: OrderStatus;
+  @IsString()
+  newStatus: string;
 
   @IsDate()
   changedAt: Date;
