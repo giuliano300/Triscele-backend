@@ -32,6 +32,7 @@ export class UpdateCustomerDto {
   @IsString()
   vatNumber: string;
 
+  @IsOptional()
   @IsNumber()
   status: number;
 

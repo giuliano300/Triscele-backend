@@ -17,7 +17,8 @@ export class CustomerService {
     const createdCustomer = new this.customerModel(
       {
         ...createCustomerDto,
-        createdAt: new Date()
+        createdAt: new Date(),
+        status: 1
       }
     );
     return createdCustomer.save();
@@ -61,7 +62,8 @@ if (name) {
     const updatedCustomer = await this.customerModel
       .findByIdAndUpdate(id, {
         ...updateCustomerDto,
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        status: 1
       }, { new: true })
       .exec();
     if (!updatedCustomer) {

@@ -24,6 +24,29 @@ export class ProductService {
     return product.save();
   }
 
+  async duplicate(productId: string): Promise<Product> {
+    // 1. Trova il prodotto originale
+    const original = await this.productModel.findById(productId);
+    if (!original) {
+      throw new NotFoundException('Prodotto non trovato');
+    }
+
+    // 2. Crea un nuovo oggetto senza _id e createdAt
+    const duplicatedData = {
+      ...original.toObject(),
+    };
+
+    delete duplicatedData._id;
+    delete duplicatedData.createdAt; // 👈 elimina il campo del tutto
+    delete duplicatedData.updatedAt; // se esiste
+    duplicatedData.name = `${duplicatedData.name} (Copia)`; // opzionale, per distinguere
+
+    // 3. Crea e salva il nuovo prodotto
+    const duplicatedProduct = new this.productModel(duplicatedData);
+    return duplicatedProduct.save();
+  }
+
+
   async findAll(
     page = 1,
     limit = 20,
@@ -55,7 +78,7 @@ export class ProductService {
           path: 'supplierId',
           select: 'name lastName supplierCode businessName'
         })
-        .sort({ createdAt: -1, _id: -1 })
+        .sort({ _id: -1 })
         .skip(skip)
         .limit(limit)
         .lean()
@@ -70,7 +93,7 @@ export class ProductService {
 
         const productMovements = await this.productMovementModel
           .find({ productId: String(product._id) })
-          .sort({ createdAt: -1, _id: -1 })
+          .sort({ _id: -1 })
           .exec();
 
         return {
@@ -138,8 +161,10 @@ export class ProductService {
       name: p.name,
       price: p.price,
       supplierCode: p.supplierCode,
+      supplierId: p.supplierId._id,
       supplierName: (p.supplierId as any).businessName!,
-      subProducts: p.subProducts
+      subProducts: p.subProducts,
+      stock_type: p.stock_type
     }));
   }
   

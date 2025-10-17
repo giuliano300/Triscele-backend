@@ -26,7 +26,7 @@ export class Customer {
   @Prop()
   sdi: string;
  
-  @Prop({ required: true })
+  @Prop()
   status: string;
  
   @Prop({ required: true })

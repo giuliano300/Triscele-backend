@@ -49,6 +49,10 @@ export class ProductController {
     return this.productService.findOne(id);
   }
 
+  @Post(':id/duplicate')
+  async duplicate(@Param('id') id: string): Promise<unknown> {
+    return this.productService.duplicate(id);
+  }
 
   @Put(':id')
   update(@Param('id') id: string, @Body() dto: UpdateProductDto): Promise<Product> {

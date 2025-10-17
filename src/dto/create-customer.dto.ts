@@ -30,6 +30,7 @@ export class CreateCustomerDto {
   @IsString()
   vatNumber: string;
 
+  @IsOptional()
   @IsNumber()
   status: number;
 
