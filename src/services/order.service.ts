@@ -4,6 +4,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateOrderDto, UpdateOrderDto } from 'src/dto/order.dto';
+import { UpdateOnlyOperatorDataOrderDto } from 'src/dto/update-only-operator-data-order';
 import { OrderChangeState } from 'src/interfaces/order-change-state';
 import { Operator, OperatorDocument } from 'src/schemas/operators.schema';
 import { OrderState, OrderStateDocument } from 'src/schemas/order-state.schema';
@@ -241,6 +242,55 @@ export class OrderService {
     const updated = await this.orderModel.findByIdAndUpdate(id, updateData, { new: true });
 
     return updated as Order;
+  }
+
+  async updateOnlyOperatorDataOrder(dto: UpdateOnlyOperatorDataOrderDto): Promise<boolean> {
+    console.log('Ricevuto DTO:', dto);
+    const existingOrder = await this.orderModel.findById(dto.orderId);
+    if (!existingOrder) {
+      throw new NotFoundException(`Order ${dto.orderId} non trovato`);
+    }
+
+    // 1 Tracciamento cambio status
+    const changeState: OrderChangeState[] = existingOrder.orderChangeState || [];
+    if (dto.status && dto.status !== (existingOrder.status ? existingOrder.status.toString() : null)) 
+    {
+      let operatorName = "";
+
+      if (dto.operatorId) {
+        const operator = await this.operatorModel.findById(dto.operatorId).select('lastName name businessName');
+        if (operator) {
+          operatorName = operator.businessName
+            ? operator.businessName
+            : `${operator.name || ''} ${operator.lastName || ''}`.trim();
+        }
+      }
+
+      changeState.push({
+        orderState: (existingOrder.status as Types.ObjectId).toString(),
+        orderId: (existingOrder._id as Types.ObjectId).toString(),
+        oldStatus: (existingOrder.status as Types.ObjectId).toString(),
+        newStatus: dto.status,
+        changedAt: new Date(),
+        operatorId: dto.operatorId,
+        operatorName: operatorName || 'Amministrazione'
+      });
+    }
+
+    // 2 Aggiornamento ordine
+    const updateData: any = {
+      updatedAt: new Date(),
+      status: dto.status,
+      orderChangeState: changeState,
+    };
+
+   updateData.operatorId = dto.operatorId ? new Types.ObjectId(dto.operatorId) : null;
+
+    const updated = await this.orderModel.findByIdAndUpdate(dto.orderId,
+    { $set: updateData },
+    { new: true });
+
+    return updated ? true : false;
   }
 
   async remove(id: string): Promise<boolean> {

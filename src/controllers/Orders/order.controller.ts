@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Controller, Get, Post, Put, Delete, Param, Body, Query } from '@nestjs/common';
 import { CreateOrderDto, UpdateOrderDto } from 'src/dto/order.dto';
+import { UpdateOnlyOperatorDataOrderDto } from 'src/dto/update-only-operator-data-order';
 import { Order } from 'src/schemas/order.schema';
 import { OrderService } from 'src/services/order.service';
 
@@ -48,6 +49,14 @@ export class OrderController {
     @Query('operatorId') operatorId?: string
   ): Promise<Order> {
     return this.orderService.update(id, dto, operatorId);
+  }
+
+  @Post('updateOnlyOperatorDataOrder')
+  updateOnlyOperatorDataOrder(
+    @Body() dto: UpdateOnlyOperatorDataOrderDto,
+  ): Promise<boolean> {
+    console.log(dto);
+    return this.orderService.updateOnlyOperatorDataOrder(dto);
   }
 
   @Post('convertToOrder')
