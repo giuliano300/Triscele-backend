@@ -52,7 +52,9 @@ export class ProductService {
     limit = 20,
     categoryId?: string,
     supplierId?: string,
-    name?: string
+    name?: string,
+    sortField: string = '_id',
+    sortDirection: 'asc' | 'desc' = 'desc'
   ): Promise<{
     data: ProductViewModel[];
     total: number;
@@ -60,15 +62,19 @@ export class ProductService {
     limit: number;
     totalPages: number;
   }> {
+    // 🔹 Costruzione filtro dinamico
     const filter: any = {};
     if (categoryId) filter.categoryId = categoryId;
     if (supplierId) filter.supplierId = supplierId;
     if (name) filter.name = { $regex: name, $options: 'i' };
 
-    // Calcolo offset
+    // 🔹 Calcolo offset
     const skip = (page - 1) * limit;
 
-    // Eseguo due query in parallelo: count e data
+    // 🔹 Costruzione dell'ordinamento
+    const sort: any = { [sortField]: sortDirection === 'asc' ? 1 : -1 };
+
+    // 🔹 Eseguo in parallelo count e fetch
     const [total, products] = await Promise.all([
       this.productModel.countDocuments(filter),
       this.productModel
@@ -78,14 +84,14 @@ export class ProductService {
           path: 'supplierId',
           select: 'name lastName supplierCode businessName'
         })
-        .sort({ _id: -1 })
+        .sort(sort)
         .skip(skip)
         .limit(limit)
         .lean()
         .exec()
     ]);
 
-    // Mappo i prodotti con dati aggiuntivi
+    // 🔹 Mappatura asincrona con dati aggiuntivi
     const data = await Promise.all(
       products.map(async product => {
         const category = product.categoryId as unknown as Category;
@@ -94,6 +100,7 @@ export class ProductService {
         const productMovements = await this.productMovementModel
           .find({ productId: String(product._id) })
           .sort({ _id: -1 })
+          .lean()
           .exec();
 
         return {
@@ -108,8 +115,8 @@ export class ProductService {
           files: product.files,
           purchasePackage: product.purchasePackage,
           supplierCode: product.supplierCode,
-          categoryId: String(product.categoryId._id),
-          supplierId: String(product.supplierId._id),
+          categoryId: String(product.categoryId?._id),
+          supplierId: String(product.supplierId?._id),
           category,
           supplier,
           stock: product.stock,
@@ -119,7 +126,7 @@ export class ProductService {
       })
     );
 
-    // Restituisco i dati impaginati
+    // 🔹 Risposta finale
     return {
       data,
       total,
@@ -127,8 +134,7 @@ export class ProductService {
       limit,
       totalPages: Math.ceil(total / limit)
     };
-  }
-    
+  }    
 
   async findProductsForSelect(): Promise<any[]> {
     const products = await this.productModel

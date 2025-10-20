@@ -19,10 +19,14 @@ export class ProductController {
     @Query('limit') limit = 20,
     @Query('categoryId') categoryId?: string,
     @Query('supplierId') supplierId?: string,
-    @Query('name') name?: string
+    @Query('name') name?: string,
+    @Query('sortField') sortField?: string,
+    @Query('sortDirection') sortDirection?: string
   ) 
   {
-    return this.productService.findAll(+page, +limit, categoryId, supplierId, name);
+    const direction = sortDirection === 'asc' || sortDirection === 'desc' ? sortDirection : 'desc';
+
+    return this.productService.findAll(+page, +limit, categoryId, supplierId, name, sortField, direction);
   }  
 
   @Get('findLowStock')
