@@ -15,6 +15,7 @@ export class CreateOrderDto {
   sectorId?: string;
 
   @IsString()
+  @IsOptional()
   status?: string;
 
   @IsNotEmpty()

@@ -26,6 +26,7 @@ export class OrderService {
       ...dto,
       customerId: new Types.ObjectId(dto.customerId),
       operatorId: dto.operatorId  ? new Types.ObjectId(dto.operatorId) : null,
+      status: dto.status  ? new Types.ObjectId(dto.status) : null,
       sectorId: new Types.ObjectId(dto.sectorId),
       createdAt: new Date()
     });
