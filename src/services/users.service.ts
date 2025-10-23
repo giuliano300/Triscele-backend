@@ -48,14 +48,16 @@ export class UsersService {
     }
     return user;
   }
-  async update(id: string, dto: UpdateUserDto): Promise<User> {
+  async update(id: string, dto: UpdateUserDto): Promise<User | null> {
+    const hashedPassword = await bcrypt.hash(dto.password!, 10);
+    dto.password = hashedPassword;
     const updated = await this.userModel.findByIdAndUpdate(id, dto, {
       new: true,
       runValidators: true,
     }).exec();
 
     if (!updated) {
-      throw new NotFoundException('Utente non trovato');
+      return null;
     }
 
     return updated;

@@ -18,29 +18,20 @@ class PermissionEmbedded {
 @Schema()
 export class Operator {
 
-  @Prop({ required: true })
-  businessName: string;
-
   @Prop()
+  businessName: string;
+ 
+  @Prop({ required: true })
   name: string;
   
-  @Prop()
+  @Prop({ required: true })
   lastName: string;
-  
-  @Prop()
-  birthDate: string;
-  
-  @Prop()
-  mobile: string;
   
   @Prop({ required: true })
   status: string;
  
   @Prop({ required: true })
   email: string;
-
-  @Prop({ required: true })
-  fiscalCode: string;
 
   @Prop({ required: true })
   address: string;

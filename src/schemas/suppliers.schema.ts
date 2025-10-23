@@ -47,7 +47,7 @@ export class Supplier {
   @Prop({ required: true })
   city: string;
 
-  @Prop({ required: true })
+  @Prop()
   pwd: string;
   
   @Prop()

@@ -47,6 +47,7 @@ export class UpdateSupplierDto {
   @IsString()
   city: string;
   
+  @IsOptional()
   @IsString()
   pwd: string;
 

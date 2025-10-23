@@ -3,6 +3,7 @@ import { Document, Types } from 'mongoose';
 import { Category } from './category.schema';
 import { Supplier } from './suppliers.schema';
 import { SubProducts } from 'src/interfaces/subProduct';
+import { ProductOptions } from 'src/interfaces/productOptions';
 
 export type ProductDocument = Product & Document;
 
@@ -48,6 +49,9 @@ export class Product {
   
   @Prop()
   subProducts: SubProducts[];
+  
+  @Prop()
+  options: ProductOptions[];
   
   @Prop()
   createdAt?: Date;

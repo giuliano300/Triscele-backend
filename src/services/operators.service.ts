@@ -16,7 +16,8 @@ export class OperatorService {
   async create(createOperatorDto: CreateOperatorDto): Promise<Operator> {
     const createdOperator = new this.OperatorModel({
       ...createOperatorDto,
-      createdAt: new Date()
+      createdAt: new Date(),
+      businessName: createOperatorDto.name + " " + createOperatorDto.lastName
     });
     return createdOperator.save();
   }
@@ -65,7 +66,8 @@ export class OperatorService {
     const updatedOperator = await this.OperatorModel
       .findByIdAndUpdate(id, {
         ...updateOperatorDto,
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        businessName: updateOperatorDto.name + " " + updateOperatorDto.lastName
       }, { new: true })
       .exec();
     if (!updatedOperator) {

@@ -3,10 +3,11 @@ import { IsArray, IsEmail, IsNumber, IsOptional, IsString, ValidateNested } from
 import { PermissionDto } from "./permission.dto";
 
 export class UpdateOperatorDto {
+
   @IsOptional()
   @IsString()
-  businessName?: string;
-
+  businessName: string;
+  
   @IsOptional()
   @IsString()
   name?: string;
@@ -16,19 +17,8 @@ export class UpdateOperatorDto {
   lastName?: string;
 
   @IsOptional()
-  @IsString()
-  birthDate?: string;
-
-  @IsOptional()
-  @IsString()
-  mobile?: string;
-
-  @IsOptional()
   @IsEmail()
   email?: string;
-
-  @IsString()
-  fiscalCode: string;
 
   @IsNumber()
   status: number;

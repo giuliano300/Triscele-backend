@@ -45,6 +45,7 @@ export class CreateSupplierDto {
   @IsString()
   city: string;
 
+  @IsOptional()
   @IsString()
   pwd: string;
 
