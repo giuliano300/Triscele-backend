@@ -17,6 +17,7 @@ import { SectorModule } from './controllers/Sectors/sectors.module';
 import { AgentModule } from './controllers/Agents/agents.module';
 import { OrderStateModule } from './controllers/OrderState/order-state.module';
 import { EmailModule } from './modules/email.module';
+import { ProductsOptionsModule } from './controllers/ProductsOptions/productsOptions.module';
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://localhost:27017/triscele'),
@@ -34,7 +35,8 @@ import { EmailModule } from './modules/email.module';
     SectorModule,
     AgentModule,
     OrderStateModule,
-    EmailModule
+    EmailModule,
+    ProductsOptionsModule
   ],
   controllers: [AppController],
     providers: [AppService],

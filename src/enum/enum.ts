@@ -22,6 +22,6 @@ export enum FieldTypes {
 }
 
 export enum ConditionalLogic{
-  show = 1,
-  hide
+  depends = 1,
+  notDepends
 }
