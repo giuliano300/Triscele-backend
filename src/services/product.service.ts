@@ -121,7 +121,8 @@ export class ProductService {
           supplier,
           stock: product.stock,
           productMovements,
-          subProducts: product.subProducts
+          subProducts: product.subProducts,
+          options: product.options
         };
       })
     );
@@ -170,7 +171,8 @@ export class ProductService {
       supplierId: p.supplierId._id,
       supplierName: (p.supplierId as any).businessName!,
       subProducts: p.subProducts,
-      stock_type: p.stock_type
+      stock_type: p.stock_type,
+      options: p.options
     }));
   }
   
@@ -213,8 +215,9 @@ export class ProductService {
           supplier: supplier,
           stock: product.stock,
           productMovements: productMovements,
-          subProducts: product.subProducts
-        };
+          subProducts: product.subProducts,
+          options: product.options
+       };
       })
     );
   }
@@ -252,7 +255,8 @@ export class ProductService {
       supplier: supplier,
       stock:product.stock,
       productMovements: productMovements,
-      subProducts: product.subProducts
+      subProducts: product.subProducts,
+      options: product.options
     }
   }
 

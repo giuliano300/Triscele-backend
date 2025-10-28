@@ -1,3 +1,4 @@
+import { ProductOptions } from "src/interfaces/productOptions";
 import { SubProducts } from "src/interfaces/subProduct";
 import { Category } from "src/schemas/category.schema";
 import { ProductMovements } from "src/schemas/product-movement.schema";
@@ -22,4 +23,5 @@ export interface ProductViewModel {
   stock: number;
   productMovements?: ProductMovements[];
   subProducts?: SubProducts[];
+  options: ProductOptions[];
 }

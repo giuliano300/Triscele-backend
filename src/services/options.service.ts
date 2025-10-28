@@ -1,23 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateProductsOptionsDto } from 'src/dto/create-products-options.dto';
-import { UpdateProductsOptionsDto } from 'src/dto/update-products-options.dto';
-import { Product } from 'src/schemas/product.schema';
-import { ProductsOptions } from 'src/schemas/products-options.schema';
+import { CreateOptionsDto } from 'src/dto/create-options.dto';
+import { UpdateOptionsDto } from 'src/dto/update-options.dto';
+import { Options } from 'src/schemas/options.schema';
 
 @Injectable()
-export class ProductsOptionsService {
+export class OptionsService {
   constructor(
-    @InjectModel(ProductsOptions.name) 
-    private productsOptionsModel: Model<ProductsOptions>,
-
-    @InjectModel(Product.name)
-    private productModel: Model<Product>,
+    @InjectModel(Options.name) 
+    private productsOptionsModel: Model<Options>,
   ) {}
 
   // Crea una nuova Options
-  async create(p: CreateProductsOptionsDto): Promise<ProductsOptions> {
+  async create(p: CreateOptionsDto): Promise<Options> {
 
     // eslint-disable-next-line no-useless-catch
     try {
@@ -38,12 +34,12 @@ export class ProductsOptionsService {
   }
 
   // Recupera tutte le Options
-  async findAll(): Promise<ProductsOptions[]> {
+  async findAll(): Promise<Options[]> {
     return this.productsOptionsModel.find().sort({ createdAt: -1 }).exec();
   }
 
   // Recupera una Options per ID
-  async findOne(id: string): Promise<ProductsOptions> {
+  async findOne(id: string): Promise<Options> {
     const cat = await this.productsOptionsModel.findById(id).exec();
     if (!cat) {
       throw new NotFoundException(`Option con ID ${id} non trovato`);
@@ -52,7 +48,7 @@ export class ProductsOptionsService {
   }
 
   // Aggiorna una Options per ID
-  async update(id: string, p: UpdateProductsOptionsDto): Promise<boolean> {
+  async update(id: string, p: UpdateOptionsDto): Promise<boolean> {
     const cat = await this.productsOptionsModel
       .findByIdAndUpdate(id, 
         {

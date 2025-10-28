@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import { ProductUpDto } from 'src/dto/productUp.dto';
 
 export type ProductsOptionsDocument = ProductsOptions & Document;
@@ -13,11 +13,11 @@ export class ProductsOptions {
   @Prop()
   products: ProductUpDto[]
 
-  @Prop()
-  parentId?: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'ProductsOptions' })
+  parent?: ProductsOptions;
 
   @Prop()
-  parentProductId?: string;
+  parentProduct?: ProductUpDto;
 
   @Prop()
   createdAt?: Date;

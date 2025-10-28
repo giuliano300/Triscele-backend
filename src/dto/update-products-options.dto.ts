@@ -1,6 +1,7 @@
 import { Type } from "class-transformer";
-import { IsArray, IsOptional, IsString, ValidateNested } from "class-validator";
-import { Product } from "src/schemas/product.schema";
+import { IsArray, IsObject, IsOptional, IsString, ValidateNested } from "class-validator";
+import { ProductUpDto } from "./productUp.dto";
+import { ProductOptionsDto } from "./product-options.dto";
 
 export class UpdateProductsOptionsDto {
 
@@ -9,15 +10,19 @@ export class UpdateProductsOptionsDto {
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => Product)
-  products: Product[]
+  @Type(() => ProductUpDto)
+  products: ProductUpDto[]
 
-  @IsString()
+  @IsObject()
   @IsOptional()
-  parentId?: string;
+  @ValidateNested({ each: true })
+  @Type(() => ProductOptionsDto)
+  parent?: ProductOptionsDto;
 
-  @IsString()
   @IsOptional()
-  parentProductId?: string;
+  @IsObject()
+  @ValidateNested({ each: true })
+  @Type(() => ProductUpDto)
+  parentProduct: ProductUpDto
 
 }

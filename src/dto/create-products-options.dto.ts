@@ -1,6 +1,7 @@
 import { Type } from "class-transformer";
-import { IsArray, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsObject, IsOptional, IsString, ValidateNested } from "class-validator";
 import { ProductUpDto } from "./productUp.dto";
+import { ProductOptionsDto } from "./product-options.dto";
 
 export class CreateProductsOptionsDto {
 
@@ -12,12 +13,16 @@ export class CreateProductsOptionsDto {
   @Type(() => ProductUpDto)
   products: ProductUpDto[]
 
-  @IsString()
+  @IsObject()
   @IsOptional()
-  parentId?: string;
+  @ValidateNested({ each: true })
+  @Type(() => ProductOptionsDto)
+  parent?: ProductOptionsDto;
 
-  @IsString()
   @IsOptional()
-  parentProductId?: string;
+  @IsObject()
+  @ValidateNested({ each: true })
+  @Type(() => ProductUpDto)
+  parentProduct: ProductUpDto
 
 }

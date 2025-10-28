@@ -4,6 +4,4 @@ export interface ProductOptions {
   _id: string;
   position: number;
   option: ProductsOptions;
-  parentId?: string;
-  parentProductId?: string;
 }
