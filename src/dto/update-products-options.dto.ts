@@ -1,7 +1,8 @@
 import { Type } from "class-transformer";
-import { IsArray, IsObject, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsEnum, IsObject, IsOptional, IsString, ValidateNested } from "class-validator";
 import { ProductUpDto } from "./productUp.dto";
 import { ProductOptionsDto } from "./product-options.dto";
+import { OptionType } from "src/enum/enum";
 
 export class UpdateProductsOptionsDto {
 
@@ -13,6 +14,12 @@ export class UpdateProductsOptionsDto {
   @Type(() => ProductUpDto)
   products: ProductUpDto[]
 
+  @IsEnum(OptionType)
+  optionType: OptionType;
+
+  @IsString()
+  layer: string;
+  
   @IsObject()
   @IsOptional()
   @ValidateNested({ each: true })

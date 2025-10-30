@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { ProductUpDto } from 'src/dto/productUp.dto';
+import { OptionType } from 'src/enum/enum';
 
 export type OptionsDocument = Options & Document;
 
@@ -9,6 +10,12 @@ export class Options {
   
   @Prop({ required: true })
   name: string;
+  
+  @Prop()
+  layer: string;
+  
+  @Prop({ required: true })
+  optionType: OptionType;
   
   @Prop()
   products: ProductUpDto[]

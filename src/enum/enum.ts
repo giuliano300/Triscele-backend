@@ -10,18 +10,14 @@ export interface AgentOption {
   label: string;
 }
 
-export enum FieldTypes {
-  select = 1,
-  selectMultiple, 
-  date,
-  color,
-  checkbox, 
-  radio,
-  text,
-  texarea
-}
-
 export enum ConditionalLogic{
   depends = 1,
   notDepends
+}
+export enum OptionType{
+  select = 1,
+  text,
+  textarea,
+  date,
+  color
 }
