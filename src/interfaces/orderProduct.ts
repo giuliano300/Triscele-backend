@@ -7,6 +7,8 @@ export interface OrderProducts {
   quantity: string;
   price: number;
   discount: number;
+  discountPercentage: number;
+  discountPercentage2: number;
   total: number;
   isSubs?:boolean;
   note?:string;
