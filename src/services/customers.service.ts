@@ -80,4 +80,11 @@ if (name) {
     }
     return deletedCustomer;
   }
+
+  async findByEmailPwd(email: string, pwd: string): Promise<any | null> {
+    const c = await this.customerModel.findOne({ email, pwd }).exec();
+    if (!c) return null;
+
+    return c
+  }
 }

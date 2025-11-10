@@ -27,6 +27,10 @@ export class UpdateCustomerDto {
 
   @IsOptional()
   @IsString()
+  pwd?: string;
+
+  @IsOptional()
+  @IsString()
   sdi: string;
 
   @IsString()

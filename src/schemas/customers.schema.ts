@@ -29,6 +29,9 @@ export class Customer {
   @Prop()
   status: string;
  
+  @Prop()
+  pwd: string;
+ 
   @Prop({ required: true })
   email: string;
 

@@ -121,7 +121,7 @@ export class OrderService {
       this.orderModel.countDocuments(filter),
       this.orderModel
         .find(filter)
-        .populate('customerId', 'name businessName')
+        .populate('customerId', 'name businessName vatNumber')
         .populate('operatorId', 'name businessName')
         .populate('sectorId', 'name')
         .populate('status', 'name color')
@@ -144,7 +144,7 @@ export class OrderService {
   async findOne(id: string): Promise<Order> {
     const order = await this.orderModel
       .findById(id)
-      .populate('customerId', 'name businessName')
+      .populate('customerId', 'name businessName vatNumber')
       .populate('operatorId', 'name businessName')
       .populate('sectorId', 'name')
       .populate('status', 'name color')

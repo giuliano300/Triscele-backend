@@ -7,6 +7,7 @@ import { CreateUserDto } from '../../dto/create-user.dto';
 import { User } from 'src/schemas/user.schema';
 import { UserDto } from 'src/dto/user.dto';
 import { OperatorService } from 'src/services/operators.service';
+import { CustomerService } from 'src/services/customers.service';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +15,7 @@ export class AuthService {
     private usersService: UsersService,
     private operatorService: OperatorService,
     private jwtService: JwtService,
+    private customerService: CustomerService
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
@@ -38,8 +40,29 @@ export class AuthService {
     };
   }
 
+  async loginCustomer(o: any) {
+    const payload = { 
+      username: o.email, 
+      name: o.businessName, 
+      sub: o.id, 
+      role: 'customer',
+      c: o
+    };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
+
    async validateOperator(email: string, password: string): Promise<any | null> {
     const o = await this.operatorService.findByEmailPwd(email, password);
+    if (o)
+      return o;
+      
+    return null;
+  }
+
+   async validateCustomer(email: string, password: string): Promise<any | null> {
+    const o = await this.customerService.findByEmailPwd(email, password);
     if (o)
       return o;
       

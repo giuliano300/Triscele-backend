@@ -22,6 +22,10 @@ export class CreateCustomerDto {
 
   @IsEmail()
   email: string;
+ 
+  @IsOptional()
+  @IsString()
+  pwd?: string;
 
   @IsOptional()
   @IsString()

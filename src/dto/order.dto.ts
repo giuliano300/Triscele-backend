@@ -12,6 +12,7 @@ export class CreateOrderDto {
   operatorId?: string;
 
   @IsString()
+  @IsOptional()
   sectorId?: string;
 
   @IsString()

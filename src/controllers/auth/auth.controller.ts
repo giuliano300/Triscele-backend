@@ -29,4 +29,12 @@ export class AuthController {
    
     return this.authService.loginOperator(operator);
   }
+  @Post('loginCustomer')
+  async loginCustomer(@Body() loginDto: LoginDto) {
+    const c = await this.authService.validateCustomer(loginDto.email, loginDto.password);
+    if (!c) 
+      return null;
+   
+    return this.authService.loginCustomer(c);
+  }
 }
