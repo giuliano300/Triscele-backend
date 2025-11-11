@@ -18,6 +18,10 @@ import { AgentModule } from './controllers/Agents/agents.module';
 import { OrderStateModule } from './controllers/OrderState/order-state.module';
 import { EmailModule } from './modules/email.module';
 import { OptionsModule } from './controllers/Options/Options.module';
+import { IllnessModule } from './controllers/Illness/illness.module';
+import { PermissionHolidayModule } from './controllers/PermissionHolidays/permission-holiday.module';
+import { AttendanceModule } from './controllers/Attendances/attendance.module';
+
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://localhost:27017/triscele'),
@@ -36,7 +40,10 @@ import { OptionsModule } from './controllers/Options/Options.module';
     AgentModule,
     OrderStateModule,
     EmailModule,
-    OptionsModule
+    OptionsModule,
+    IllnessModule,
+    PermissionHolidayModule,
+    AttendanceModule
   ],
   controllers: [AppController],
     providers: [AppService],
