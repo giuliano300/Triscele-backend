@@ -15,8 +15,8 @@ export class Attendance {
   @Prop({ required: true })
   entryTime: string; // formato "HH:mm:ss"
 
-  @Prop({ required: true })
-  exitTime: string; // formato "HH:mm:ss"
+  @Prop()
+  exitTime?: string; // formato "HH:mm:ss"
 
   @Prop()
   notes?: string;

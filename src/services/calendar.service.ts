@@ -32,7 +32,7 @@ export class CalendarService {
           .populate<{ operatorId: any }>('operatorId')
           .lean()
           .exec(),
-      this.permissionHolidayModel.find(filter)
+      this.permissionHolidayModel.find({...filter, accepted: true})
           .populate<{ operatorId: any }>('operatorId')
           .lean()
           .exec(),
@@ -47,17 +47,21 @@ export class CalendarService {
     // Attendance → PRESENCE
     attendances.forEach(a => {
       events.push({
+        tipologia: 'presenza',
+        id: a._id,
         title: 'Presenza', 
         fullName: `${a.operatorId?.name ?? ''} ${a.operatorId?.lastName ?? ''}`, 
         start: a.entryTime ? `${a.date.toISOString().split('T')[0]}T${a.entryTime}` : a.date,
         end: a.exitTime ? `${a.date.toISOString().split('T')[0]}T${a.exitTime}` : a.date,
         color: '#6FA8DC',
+        startHour: null,
+        endHour: null
       });
     });
 
     // PermissionHoliday → ABSENCE
     permissions.forEach(p => {
-      let title = p.type == 1 ? 'Assenza' : 'Permesso';
+      let title = p.type == 1 ? 'Ferie' : 'Permesso';
 
       // se non è assenza, calcolo la differenza ore
       if (p.type != 1 && p.startHour && p.endHour) {
@@ -78,25 +82,33 @@ export class CalendarService {
         : p.endDate.toISOString().split('T')[0];
 
       events.push({
+        tipologia: 'assenza',
+        id: p._id,
         title,
         fullName: `${p.operatorId?.name ?? ''} ${p.operatorId?.lastName ?? ''}`,
         reason: p.reason,
         start,
         end,
         color: '#FFB347',
-        allDay: !p.startHour && !p.endHour
+        allDay: !p.startHour && !p.endHour,
+        startHour: p.startHour,
+        endHour: p.endHour,
       });
     });
 
     // Illness → ILLNESS
     illnesses.forEach(i => {
       events.push({
+        tipologia: 'malattia',
+        id: i._id,
         title: 'Malattia', 
         fullName: `${i.operatorId?.name ?? ''} ${i.operatorId?.lastName ?? ''}`, 
         start: i.start,
         end: i.end,
         color: '#E57373',
-        allDay: true  
+        allDay: true,
+        startHour: null,
+        endHour: null
       });
     });
 

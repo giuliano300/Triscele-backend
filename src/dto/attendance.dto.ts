@@ -10,8 +10,9 @@ export class AttendanceDto {
   @IsString()
   entryTime: string; // "HH:mm:ss"
 
+  @IsOptional()
   @IsString()
-  exitTime: string;  // "HH:mm:ss"
+  exitTime?: string;  // "HH:mm:ss"
 
   @IsOptional()
   @IsString()
