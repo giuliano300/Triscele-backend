@@ -23,6 +23,11 @@ export class PermissionHolidayController {
     return this.permissionHolidayService.findAll(operatorId);
   }
 
+  @Get('count-pending')
+  async countPending(@Query('operatorId') operatorId?: string) {
+    return this.permissionHolidayService.countPending(operatorId);
+  }
+
   @Get(':id')
   async findById(@Param('id') id: string) {
     const item = await this.permissionHolidayService.findById(id);
@@ -33,7 +38,7 @@ export class PermissionHolidayController {
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() dto: Partial<PermissionHolidayDto>) {
+  async update(@Param('id') id: string, @Body() dto: PermissionHolidayDto) {
     const updated = await this.permissionHolidayService.update(id, dto);
     if (!updated) {
       throw new HttpException('Permesso non trovato o non aggiornato', HttpStatus.NOT_FOUND);

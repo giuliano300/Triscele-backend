@@ -4,7 +4,7 @@ import { Operator } from './operators.schema';
 
 export type PermissionHolidayDocument = PermissionHoliday & Document;
 
-@Schema({ timestamps: true })
+@Schema()
 export class PermissionHoliday {
   @Prop({ required: true })
   type: number;

@@ -54,8 +54,8 @@ export class CalendarService {
         start: a.entryTime ? `${a.date.toISOString().split('T')[0]}T${a.entryTime}` : a.date,
         end: a.exitTime ? `${a.date.toISOString().split('T')[0]}T${a.exitTime}` : a.date,
         color: '#6FA8DC',
-        startHour: null,
-        endHour: null
+        startHour: a.entryTime,
+        endHour: a.exitTime
       });
     });
 
