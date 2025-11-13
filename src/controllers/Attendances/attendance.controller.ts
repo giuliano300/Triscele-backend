@@ -38,4 +38,16 @@ export class AttendanceController {
   async delete(@Param('id') id: string) {
     return this.attendanceService.delete(id);
   }
+
+  // ✅ Verifica se esiste una presenza oggi per un operatore
+  @Get('exist/:operatorId')
+  async existTodayAttendance(@Param('operatorId') operatorId: string) {
+    return this.attendanceService.existTodayAttendance(operatorId);
+  }
+
+  // ✅ Ottiene la presenza di oggi per un operatore
+  @Get('today/:operatorId')
+  async getTodayAttendance(@Param('operatorId') operatorId: string) {
+    return this.attendanceService.getTodayAttendance(operatorId);
+  }
 }

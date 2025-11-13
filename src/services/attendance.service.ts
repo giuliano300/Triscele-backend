@@ -37,4 +37,29 @@ export class AttendanceService {
     return this.attendanceModel.findByIdAndDelete(id).exec();
   }
   
+ // ✅ Controlla se esiste una presenza per oggi
+  async existTodayAttendance(operatorId: string): Promise<boolean> {
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+    const attendance = await this.attendanceModel.findOne({
+      operatorId,
+      date: { $gte: startOfDay, $lte: endOfDay },
+    });
+
+    return !!attendance;
+  }
+
+  // ✅ Recupera la presenza di oggi
+  async getTodayAttendance(operatorId: string) {
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+    return this.attendanceModel.findOne({
+      operatorId,
+      date: { $gte: startOfDay, $lte: endOfDay },
+    });
+  } 
 }
