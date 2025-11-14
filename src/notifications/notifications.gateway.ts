@@ -4,6 +4,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { PermissionHoliday } from 'src/schemas/permission-holiday.schema';
 
 @WebSocketGateway({
   cors: {
@@ -16,5 +17,13 @@ export class NotificationsGateway {
 
   sendNewAbsence(operatorName: string) {
     this.server.emit('newAbsence', { operatorName });
+  }
+
+  confirmAbsence(p: PermissionHoliday) {
+    this.server.emit('confirmAbsence', { p });
+  }
+
+  sendNewQuotation(p: string) {
+    this.server.emit('sendNewQuotation', { p });
   }
 }

@@ -54,16 +54,27 @@ export class PermissionHolidayService {
       .exec();
   }
 
-  async update(id: string, dto: PermissionHolidayDto): Promise<PermissionHoliday> {
-    const p = await this.permissionHolidayModel.findByIdAndUpdate(
-      id,
-      { ...dto, updatedAt: new Date() },
-      { new: true }
-    ).exec();
+  async update(id: string, dto: PermissionHolidayDto): Promise<PermissionHoliday | null> {
+    // 1. Recupero documento originale
+    const old = await this.permissionHolidayModel.findById(id).exec();
 
-    if (!p) {
+    if (!old) {
       throw new NotFoundException(`PermissionHoliday con ID ${id} non trovato`);
     }
+
+    // 2. Aggiornamento documento
+    const p = await this.permissionHolidayModel
+      .findByIdAndUpdate(
+        id,
+        { ...dto, updatedAt: new Date() },
+        { new: true }
+      )
+      .exec();
+
+    // 3. Invio notifica SOLO se prima era null
+    if (old.accepted === null && p!.accepted !== null)
+      this.notifications.confirmAbsence(p!);
+
     return p;
   }
 

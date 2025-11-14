@@ -6,6 +6,8 @@ import { Model, Types } from 'mongoose';
 import { CreateOrderDto, UpdateOrderDto } from 'src/dto/order.dto';
 import { UpdateOnlyOperatorDataOrderDto } from 'src/dto/update-only-operator-data-order';
 import { OrderChangeState } from 'src/interfaces/order-change-state';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
+import { Customer, CustomerDocument } from 'src/schemas/customers.schema';
 import { Operator, OperatorDocument } from 'src/schemas/operators.schema';
 import { OrderState, OrderStateDocument } from 'src/schemas/order-state.schema';
 import { Order, OrderDocument } from 'src/schemas/order.schema';
@@ -14,10 +16,13 @@ import { Product, ProductDocument } from 'src/schemas/product.schema';
 @Injectable()
 export class OrderService {
   constructor(
+    private notifications: NotificationsGateway,
     @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
     @InjectModel(Product.name) private productModel: Model<ProductDocument>,
     @InjectModel(Operator.name) private operatorModel: Model<OperatorDocument>,
     @InjectModel(OrderState.name) private orderStateModel: Model<OrderStateDocument>,
+    @InjectModel(Customer.name) private readonly customerModel: Model<CustomerDocument>,
+    
     
   ) {}
 
@@ -38,7 +43,20 @@ export class OrderService {
       );
     }
 
-    return createdOrder.save();
+    const result = createdOrder.save();
+
+    if(dto.isCustomer === true)
+    {
+      const customer = await this.customerModel.findById(dto.customerId);
+      if (!customer) {
+        throw new NotFoundException(`customer con ID ${dto.customerId} non trovato`);
+      }
+      const customerName = customer.businessName;
+
+      this.notifications.sendNewQuotation(customerName);
+    }
+
+    return result;
   }
 
   async findAll(
