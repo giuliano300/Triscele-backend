@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsEnum, IsNumber, IsArray, IsOptional, IsEmpty, IsBoolean } from 'class-validator';
+import { IsNotEmpty, IsString, IsEnum, IsNumber, IsArray, IsOptional, IsBoolean } from 'class-validator';
 import { PaymentMethod } from 'src/enum/enum';
 import { OrderProducts } from 'src/interfaces/orderProduct';
 

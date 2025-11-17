@@ -10,4 +10,8 @@ export class ProductUpDto {
   @IsNumber()
   price: number;
 
+  @IsString()
+  @IsNotEmpty()
+  stock_type: string;
+
 }
