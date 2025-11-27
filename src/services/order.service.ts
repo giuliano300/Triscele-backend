@@ -196,6 +196,10 @@ export class OrderService {
         { new: true }
       );
 
+      
+        this.notifications.createOrderFromQuotation((existingOrder.customerId as Types.ObjectId).toString(), (existingOrder._id as Types.ObjectId).toString());
+
+
       return updated as Order;
   };
 
@@ -245,6 +249,15 @@ export class OrderService {
         operatorId: operatorId,
         operatorName: operatorName || 'Amministrazione'
       });
+
+      const status = await this.orderStateModel.findById(dto.status).lean();
+      if(status){
+        if(existingOrder.status)
+          this.notifications.updateOrderStatus((existingOrder.customerId as Types.ObjectId).toString(), (existingOrder._id as Types.ObjectId).toString(), status.name );
+        else
+          this.notifications.createOrderFromQuotation((existingOrder.customerId as Types.ObjectId).toString(), (existingOrder._id as Types.ObjectId).toString());
+      }
+
     }
 
     // 4️⃣ Aggiornamento ordine

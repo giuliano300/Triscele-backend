@@ -26,4 +26,12 @@ export class NotificationsGateway {
   sendNewQuotation(p: string) {
     this.server.emit('sendNewQuotation', { p });
   }
+
+  updateOrderStatus(customerId: string, id: string, status: string) {
+    this.server.emit('updateOrderStatus', { id, customerId, status });
+  }
+
+  createOrderFromQuotation(customerId: string, id: string) {
+    this.server.emit('createOrderFromQuotation', { id, customerId });
+  }
 }
