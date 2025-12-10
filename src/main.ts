@@ -13,7 +13,7 @@ async function bootstrap() {
 
   // Abilita CORS per tutti (in sviluppo) o limita agli host che vuoi
   app.enableCors({
-    origin: '*', // oppure ['https://demo.ewtlab.it']
+    origin: '*', 
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   });
 

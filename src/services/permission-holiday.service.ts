@@ -75,6 +75,18 @@ export class PermissionHolidayService {
     if (old.accepted === null && p!.accepted !== null)
       this.notifications.confirmAbsence(p!);
 
+    //4. Reinvia la notifica se viene rimessa in attesa
+    if(old.accepted != null && p?.accepted == null)
+    {
+        const operator = await this.operatorModel.findById(dto.operatorId);
+        if (!operator) {
+          throw new NotFoundException(`Operatore con ID ${dto.operatorId} non trovato`);
+        }
+        const operatorName = operator.businessName;
+
+        this.notifications.sendNewAbsence(operatorName);
+    }
+
     return p;
   }
 

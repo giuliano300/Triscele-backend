@@ -3,11 +3,16 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Illness, IllnessDocument } from 'src/schemas/illness.schema';
 import { IllnessDto } from 'src/dto/illness.dto';
+import { Operator, OperatorDocument } from 'src/schemas/operators.schema';
+import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 
 @Injectable()
 export class IllnessService {
   constructor(
+    private notifications: NotificationsGateway,
     @InjectModel(Illness.name) private IllnessModel: Model<IllnessDocument>,
+    @InjectModel(Operator.name)
+    private readonly operatorModel: Model<OperatorDocument>, // 🔹 iniezione modello operator
   ) {}
 
   // Crea una nuova Illness
@@ -18,7 +23,20 @@ export class IllnessService {
     }
   );
 
-    return createdIllness.save();
+    const result = await createdIllness.save(); // 🔹 await qui
+
+    // 🔹 recupera l'operatore
+    const operator = await this.operatorModel.findById(IllnessDto.operatorId);
+    if (!operator) {
+      throw new NotFoundException(`Operatore con ID ${IllnessDto.operatorId} non trovato`);
+    }
+    const operatorName = operator.businessName;
+
+    // 🔹 invia notifica real-time tramite Socket
+    this.notifications.sendNewAbsence(operatorName);
+
+
+    return result;
   }
 
   // Recupera tutte le Illness
