@@ -45,4 +45,24 @@ export class UpdateOperatorDto {
   @ValidateNested({ each: true })
   @Type(() => PermissionDto)
   permissions: PermissionDto[];
+
+  // --------------------------------------------
+  //  NUOVI CAMPI ORARI TEORICI
+  // --------------------------------------------
+
+  @IsOptional()
+  @IsString()
+  startTime: string;    // esempio: "08:30:00"
+
+  @IsOptional()
+  @IsString()
+  endTime: string;      // esempio: "17:30:00"
+
+  @IsOptional()
+  @IsString()
+  lunchStart: string;   // esempio: "13:00:00"
+
+  @IsOptional()
+  @IsString()
+  lunchEnd: string;     // esempio: "14:00:00"
 }

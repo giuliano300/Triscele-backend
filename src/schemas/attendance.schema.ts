@@ -12,12 +12,20 @@ export class Attendance {
   @Prop({ required: true })
   date: Date;
 
+// 👉 ORARI REALI
   @Prop({ required: true })
-  entryTime: string; // formato "HH:mm:ss"
+  entryTime: string; // "HH:mm:ss"
 
   @Prop()
-  exitTime?: string; // formato "HH:mm:ss"
+  exitTime?: string; // "HH:mm:ss"
 
+  // 👉 PAUSA PRANZO REALE
+  @Prop()
+  lunchStart?: string; // "HH:mm:ss"
+
+  @Prop()
+  lunchEnd?: string; // "HH:mm:ss"
+  
   @Prop()
   notes?: string;
 }

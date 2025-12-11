@@ -63,6 +63,20 @@ export class Operator {
   @Prop({ type: [PermissionEmbedded], default: [] })
   permissions: PermissionEmbedded[];
 
+
+  // ORARI TEORICI (per valutare ritardi, pause, ecc.)
+
+  @Prop({ required: true })
+  startTime: string;       // es. "08:30:00"
+
+  @Prop({ required: true })
+  endTime: string;         // es. "17:30:00"
+
+  @Prop({ required: true })
+  lunchStart: string;      // es. "13:00:00"
+
+  @Prop({ required: true })
+  lunchEnd: string;        // es. "14:00:00"
 }
 
 export const OperatorSchema = SchemaFactory.createForClass(Operator);

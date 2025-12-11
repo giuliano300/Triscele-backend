@@ -24,6 +24,18 @@ export class AttendanceController {
     return this.calendarService.getCalendarEvents(operatorId);
   }
 
+  @Get('month-events')
+  async getMonthlyCalendarEvents(
+    @Query('month') month: string,
+    @Query('year') year: string,
+    @Query('operatorId') operatorId?: string
+  ) {
+    const m = parseInt(month);
+    const y = parseInt(year);
+    const events = await this.calendarService.getMonthlyCalendarEvents(m, y, operatorId);
+    return { success: true, data: events };
+  }
+
   @Get(':id')
   async findById(@Param('id') id: string) {
     return this.attendanceService.findById(id);

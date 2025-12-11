@@ -114,4 +114,91 @@ export class CalendarService {
 
     return events.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
   }
+
+
+  async getMonthlyCalendarEvents(
+    month: number, // 1-12
+    year: number,
+    operatorId?: string
+  ): Promise<any[]> {
+    const filter: any = {};
+    if (operatorId && Types.ObjectId.isValid(operatorId)) {
+      filter.operatorId = operatorId;
+    }
+
+    // Calcola inizio e fine mese
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0, 23, 59, 59);
+
+    // Attendances
+    const attendances = await this.attendanceModel.find({
+      ...filter,
+      date: { $gte: startDate, $lte: endDate },
+    })
+      .populate<{ operatorId: any }>('operatorId')
+      .lean();
+
+    // PermissionHoliday
+    const permissions = await this.permissionHolidayModel.find({
+      ...filter,
+      accepted: true,
+      startDate: { $lte: endDate },
+      endDate: { $gte: startDate },
+    })
+      .populate<{ operatorId: any }>('operatorId')
+      .lean();
+
+    // Illness
+    const illnesses = await this.illnessModel.find({
+      ...filter,
+      start: { $lte: endDate },
+      end: { $gte: startDate },
+    })
+      .populate<{ operatorId: any }>('operatorId')
+      .lean();
+
+    const events: any[] = [];
+
+    // Attendance → PRESENCE
+    attendances.forEach(a => {
+      events.push({
+        tipologia: 'presenza',
+        id: a._id,
+        title: 'Presenza', 
+        fullName: `${a.operatorId?.name ?? ''} ${a.operatorId?.lastName ?? ''}`, 
+        date: a.date.toISOString().split('T')[0],
+        startHour: a.entryTime,
+        endHour: a.exitTime,
+      });
+    });
+
+    // PermissionHoliday → ABSENCE
+    permissions.forEach(p => {
+      events.push({
+        tipologia: 'assenza',
+        id: p._id,
+        title: p.type === 1 ? 'Ferie' : 'Permesso',
+        fullName: `${p.operatorId?.name ?? ''} ${p.operatorId?.lastName ?? ''}`,
+        startDate: p.startDate.toISOString().split('T')[0],
+        endDate: p.endDate.toISOString().split('T')[0],
+        startHour: p.startHour,
+        endHour: p.endHour,
+      });
+    });
+
+    // Illness → ILLNESS
+    illnesses.forEach(i => {
+      events.push({
+        tipologia: 'malattia',
+        id: i._id,
+        title: 'Malattia', 
+        fullName: `${i.operatorId?.name ?? ''} ${i.operatorId?.lastName ?? ''}`, 
+        startDate: i.start!.toISOString().split('T')[0],
+        endDate: i.end!.toISOString().split('T')[0],
+      });
+    });
+
+    return events;
+  }
+
 }

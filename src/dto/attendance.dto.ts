@@ -16,5 +16,13 @@ export class AttendanceDto {
 
   @IsOptional()
   @IsString()
+  lunchStart?: string; // "HH:mm:ss"
+
+  @IsOptional()
+  @IsString()
+  lunchEnd?: string; // "HH:mm:ss"
+
+  @IsOptional()
+  @IsString()
   notes?: string;
 }
