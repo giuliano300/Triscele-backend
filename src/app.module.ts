@@ -21,6 +21,7 @@ import { OptionsModule } from './controllers/Options/Options.module';
 import { IllnessModule } from './controllers/Illness/illness.module';
 import { PermissionHolidayModule } from './controllers/PermissionHolidays/permission-holiday.module';
 import { AttendanceModule } from './controllers/Attendances/attendance.module';
+import { NotificationsModule } from './controllers/Notifications/Notifications.module';
 
 @Module({
   imports: [
@@ -43,7 +44,8 @@ import { AttendanceModule } from './controllers/Attendances/attendance.module';
     OptionsModule,
     IllnessModule,
     PermissionHolidayModule,
-    AttendanceModule
+    AttendanceModule,
+    NotificationsModule
   ],
   controllers: [AppController],
     providers: [AppService],

@@ -21,3 +21,9 @@ export enum OptionType{
   date,
   color
 }
+
+export enum UserRole {
+  ADMIN = 'admin',
+  OPERATOR = 'operator',
+  CUSTOMER = 'customer'
+}

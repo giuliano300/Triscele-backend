@@ -4,6 +4,12 @@ import { Operator } from './operators.schema';
 
 export type AttendanceDocument = Attendance & Document;
 
+interface Break {
+  start: string;
+  end?: string;
+}
+
+
 @Schema({ timestamps: true })
 export class Attendance {
   @Prop({ required: true, type: Types.ObjectId, ref: Operator.name })
@@ -21,10 +27,7 @@ export class Attendance {
 
   // 👉 PAUSA PRANZO REALE
   @Prop()
-  lunchStart?: string; // "HH:mm:ss"
-
-  @Prop()
-  lunchEnd?: string; // "HH:mm:ss"
+  breaks: Break[];
   
   @Prop()
   notes?: string;
