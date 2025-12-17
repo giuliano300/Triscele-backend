@@ -5,6 +5,7 @@ import { PermissionHolidayService } from 'src/services/permission-holiday.servic
 import { PermissionHolidayController } from './permission-holiday.controller';
 import { NotificationModule } from 'src/notifications/notifications.module';
 import { Operator, OperatorSchema } from 'src/schemas/operators.schema';
+import { OperatorsModule } from 'src/controllers/Operator/operators.module';
 
 @Module({
   imports: [
@@ -12,7 +13,8 @@ import { Operator, OperatorSchema } from 'src/schemas/operators.schema';
       { name: PermissionHoliday.name, schema: PermissionHolidaySchema },
       { name: Operator.name, schema: OperatorSchema },
     ]),
-    NotificationModule
+    NotificationModule,
+    OperatorsModule,
   ],
   controllers: [PermissionHolidayController],
   providers: [PermissionHolidayService],

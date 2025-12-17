@@ -53,6 +53,15 @@ export class OperatorService {
   }
 
   // Recupera un Operator per ID
+  async find(id: string): Promise<OperatorDocument> {
+    const Operator = await this.OperatorModel.findById(id).exec();
+    if (!Operator) {
+      throw new NotFoundException(`Operator con ID ${id} non trovato`);
+    }
+    return Operator;
+  }
+
+  // Recupera un Operator per ID
   async findOne(id: string): Promise<Operator> {
     const Operator = await this.OperatorModel.findById(id).exec();
     if (!Operator) {
@@ -83,5 +92,21 @@ export class OperatorService {
       throw new NotFoundException(`Operator con ID ${id} non trovato`);
     }
     return deletedOperator;
+  }
+
+  async deductHolidays(operatorId: string, days: number) {
+    await this.OperatorModel.findByIdAndUpdate(
+      operatorId,
+      { $inc: { remainingNumberOfHolidays: -days } },
+      { new: true }
+    );
+  }
+
+  async deductPermissions(operatorId: string, hours: number) {
+    await this.OperatorModel.findByIdAndUpdate(
+      operatorId,
+      { $inc: { remainingNumberOfPermissions: -hours } },
+      { new: true }
+    );
   }
 }

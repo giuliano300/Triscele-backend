@@ -73,10 +73,16 @@ export class Operator {
   endTime: string;         // es. "17:30:00"
 
   @Prop({ required: true })
-  lunchStart: string;      // es. "13:00:00"
+  numberOfHolidays: number = 0;
 
   @Prop({ required: true })
-  lunchEnd: string;        // es. "14:00:00"
+  numberOfPermissions: number = 0;
+
+  @Prop({ required: true })
+  remainingNumberOfHolidays: number = 0;
+
+  @Prop({ required: true })
+  remainingNumberOfPermissions: number = 0;
 }
 
 export const OperatorSchema = SchemaFactory.createForClass(Operator);

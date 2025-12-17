@@ -59,10 +59,18 @@ export class UpdateOperatorDto {
   endTime: string;      // esempio: "17:30:00"
 
   @IsOptional()
-  @IsString()
-  lunchStart: string;   // esempio: "13:00:00"
+  @IsNumber()
+  numberOfHolidays: number = 0;
 
   @IsOptional()
-  @IsString()
-  lunchEnd: string;     // esempio: "14:00:00"
+  @IsNumber()
+  numberOfPermissions: number = 0;
+
+  @IsOptional()
+  @IsNumber()
+  remainingNumberOfHolidays: number = 0;
+
+  @IsOptional()
+  @IsNumber()
+  remainingNumberOfPermissions: number = 0;
 }
