@@ -1,11 +1,23 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Req, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../../dto/create-user.dto';
 import { LoginDto } from '../../dto/login.dto';
+import { Request } from 'express';
+import { AllowedIpService } from 'src/services/allowed-ip.service';
+import { LoginType } from 'src/enum/enum';
+import { OperatorService } from 'src/services/operators.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private allowedIpService: AllowedIpService, 
+    private operatorService: OperatorService
+  ) {}
+
+  private normalizeIp(ip: string) {
+    return ip?.replace(/^::ffff:/, '');
+  }
 
   @Post('register')
   async register(@Body() createUserDto: CreateUserDto) {
@@ -17,7 +29,7 @@ export class AuthController {
     const user = await this.authService.validateUser(loginDto.email, loginDto.password);
     if (!user) 
       return null;
-   
+
     return this.authService.login(user);
   }
 
@@ -25,10 +37,25 @@ export class AuthController {
   async loginOperator(@Body() loginDto: LoginDto) {
     const operator = await this.authService.validateOperator(loginDto.email, loginDto.password);
     if (!operator) 
-      return null;
+      return {success: false, message: 'Operatore non trovato con queste credenziali.'};
+
+    //let clientIp =
+      //req.headers['x-forwarded-for']?.toString().split(',')[0] ||
+      //req.socket.remoteAddress;
+
+    //if (operator.loginType === LoginType.onSite) 
+    //{
+      //const allowedIps = await this.allowedIpService.findAll();
+      //clientIp = this.normalizeIp(clientIp!);
+      //const isAllowed = allowedIps.some(a => a.ip === clientIp);
+
+      //if (!isAllowed)
+        //return {success: false, message: 'L\' ip di connessione non è consentito.'};
+    //}
    
     return this.authService.loginOperator(operator);
   }
+
   @Post('loginCustomer')
   async loginCustomer(@Body() loginDto: LoginDto) {
     const c = await this.authService.validateCustomer(loginDto.email, loginDto.password);
@@ -36,5 +63,29 @@ export class AuthController {
       return null;
    
     return this.authService.loginCustomer(c);
+  }
+
+  @Post('ping')
+  async ping(@Query('operatorId') operatorId: string, @Req() req: Request) {
+    const operator = await this.operatorService.find(operatorId);
+
+    if (!operator) return false;
+
+    // ottieni IP reale
+    const clientIp =
+      req.headers['x-forwarded-for']?.toString().split(',')[0] ||
+      req.socket.remoteAddress;
+
+    const ip = this.normalizeIp(clientIp!);
+
+    if (operator.loginType === LoginType.onSite) 
+    {
+      const allowedIps = await this.allowedIpService.findAll();
+      const isAllowed = allowedIps.some(a => a.ip === ip);
+
+      if (!isAllowed) return false;
+    }
+
+    return true;
   }
 }

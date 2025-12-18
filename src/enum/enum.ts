@@ -27,3 +27,8 @@ export enum UserRole {
   OPERATOR = 'operator',
   CUSTOMER = 'customer'
 }
+
+export enum LoginType {
+  homeWork = 'Home work',
+  onSite = 'In sede',
+}

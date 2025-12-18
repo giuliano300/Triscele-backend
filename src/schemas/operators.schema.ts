@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { Sector } from './sector.schema';
+import { LoginType } from 'src/enum/enum';
 
 export type OperatorDocument = Operator & Document;
 
@@ -17,6 +18,8 @@ class PermissionEmbedded {
 
 @Schema()
 export class Operator {
+  @Prop({ required: true })
+  loginType: LoginType;
 
   @Prop()
   businessName: string;

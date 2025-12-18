@@ -28,6 +28,7 @@ export class AuthService {
 
   async loginOperator(o: any) {
     const payload = { 
+      success: true,
       username: o.email, 
       name: o.businessName, 
       sub: o.id, 

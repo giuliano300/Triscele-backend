@@ -43,6 +43,7 @@ export class OperatorService {
     if (!operator) return null;
 
     return {
+      loginType: operator.loginType,
       id: operator._id,
       businessName: operator.businessName,
       name: operator.name,

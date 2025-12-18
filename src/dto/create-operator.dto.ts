@@ -2,14 +2,18 @@ import { Type } from "class-transformer";
 import {
   IsArray,
   IsEmail,
+  IsEnum,
   IsNumber,
   IsOptional,
   IsString,
   ValidateNested
 } from "class-validator";
 import { PermissionDto } from "./permission.dto";
+import { LoginType } from "src/enum/enum";
 
 export class CreateOperatorDto {
+  @IsEnum(LoginType)
+  loginType: LoginType;
 
   @IsOptional()
   @IsString()
@@ -26,6 +30,7 @@ export class CreateOperatorDto {
   @IsEmail()
   email: string;
 
+  @Type(() => Number)
   @IsNumber()
   status: number;
 
@@ -58,25 +63,29 @@ export class CreateOperatorDto {
 
   @IsOptional()
   @IsString()
-  startTime: string;    // esempio: "08:30:00"
+  startTime?: string;
 
   @IsOptional()
   @IsString()
-  endTime: string;      // esempio: "17:30:00"
+  endTime?: string;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
-  numberOfHolidays: number = 0;
+  numberOfHolidays?: number;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
-  numberOfPermissions: number = 0;
+  numberOfPermissions?: number;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
-  remainingNumberOfHolidays: number = 0;
+  remainingNumberOfHolidays?: number;
 
   @IsOptional()
+  @Type(() => Number)
   @IsNumber()
-  remainingNumberOfPermissions: number = 0;
+  remainingNumberOfPermissions?: number;
 }

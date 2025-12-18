@@ -7,12 +7,14 @@ import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './jwt.strategy';
 import { OperatorsModule } from '../Operator/operators.module';
 import { CustomersModule } from '../Customers/customers.module';
+import { AllowedIpModule } from '../Allowed-ip/allowed-ip.module';
 
 @Module({
   imports: [
     UsersModule,
     OperatorsModule,
     CustomersModule,
+    AllowedIpModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'a-string-secret-at-least-256-bits-long',

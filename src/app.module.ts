@@ -22,6 +22,7 @@ import { IllnessModule } from './controllers/Illness/illness.module';
 import { PermissionHolidayModule } from './controllers/PermissionHolidays/permission-holiday.module';
 import { AttendanceModule } from './controllers/Attendances/attendance.module';
 import { NotificationsModule } from './controllers/Notifications/Notifications.module';
+import { AllowedIpModule } from './controllers/Allowed-ip/allowed-ip.module';
 
 @Module({
   imports: [
@@ -45,7 +46,8 @@ import { NotificationsModule } from './controllers/Notifications/Notifications.m
     IllnessModule,
     PermissionHolidayModule,
     AttendanceModule,
-    NotificationsModule
+    NotificationsModule,
+    AllowedIpModule
   ],
   controllers: [AppController],
     providers: [AppService],
