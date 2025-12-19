@@ -165,6 +165,8 @@ export class CalendarService {
         tipologia: 'presenza',
         id: a._id,
         title: 'Presenza', 
+        operatorStartTime: a.operatorId.startTime,
+        operatorEndTime: a.operatorId.endTime,
         fullName: `${a.operatorId?.name ?? ''} ${a.operatorId?.lastName ?? ''}`, 
         date: a.date.toISOString().split('T')[0],
         startHour: a.entryTime,

@@ -23,6 +23,7 @@ import { PermissionHolidayModule } from './controllers/PermissionHolidays/permis
 import { AttendanceModule } from './controllers/Attendances/attendance.module';
 import { NotificationsModule } from './controllers/Notifications/Notifications.module';
 import { AllowedIpModule } from './controllers/Allowed-ip/allowed-ip.module';
+import { HolidaysModule } from './controllers/Holidays/holidays.module';
 
 @Module({
   imports: [
@@ -47,7 +48,8 @@ import { AllowedIpModule } from './controllers/Allowed-ip/allowed-ip.module';
     PermissionHolidayModule,
     AttendanceModule,
     NotificationsModule,
-    AllowedIpModule
+    AllowedIpModule,
+    HolidaysModule
   ],
   controllers: [AppController],
     providers: [AppService],
