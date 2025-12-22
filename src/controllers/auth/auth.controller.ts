@@ -1,8 +1,7 @@
-import { Controller, Post, Body, Req, Query } from '@nestjs/common';
+import { Controller, Post, Body, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../../dto/create-user.dto';
 import { LoginDto } from '../../dto/login.dto';
-import { Request } from 'express';
 import { AllowedIpService } from 'src/services/allowed-ip.service';
 import { LoginType } from 'src/enum/enum';
 import { OperatorService } from 'src/services/operators.service';
@@ -66,17 +65,10 @@ export class AuthController {
   }
 
   @Post('ping')
-  async ping(@Query('operatorId') operatorId: string, @Req() req: Request) {
+  async ping(@Query('operatorId') operatorId: string, @Query('ip') ip: string) {
     const operator = await this.operatorService.find(operatorId);
 
-    if (!operator) return false;
-
-    // ottieni IP reale
-    const clientIp =
-      req.headers['x-forwarded-for']?.toString().split(',')[0] ||
-      req.socket.remoteAddress;
-
-    const ip = this.normalizeIp(clientIp!);
+    if (!operator) return "Nessun";
 
     if (operator.loginType === LoginType.onSite) 
     {
