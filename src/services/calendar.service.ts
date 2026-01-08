@@ -61,10 +61,16 @@ export class CalendarService {
 
     // PermissionHoliday → ABSENCE
     permissions.forEach(p => {
-      let title = p.type == 1 ? 'Ferie' : 'Permesso';
+      let title ='Ferie' 
+      
+      if(p.type == 2)
+        title = 'Permesso';
+
+      if(p.type == 3)
+        title = 'Assenza ingiustificata';
 
       // se non è assenza, calcolo la differenza ore
-      if (p.type != 1 && p.startHour && p.endHour) {
+      if (p.type != 1 && p.type != 3 && p.startHour && p.endHour) {
         const start = new Date(`${p.startDate.toISOString().split('T')[0]}T${p.startHour}`);
         const end = new Date(`${p.endDate.toISOString().split('T')[0]}T${p.endHour}`);
         const diffMs = end.getTime() - start.getTime();
@@ -176,10 +182,15 @@ export class CalendarService {
 
     // PermissionHoliday → ABSENCE
     permissions.forEach(p => {
+      let title = 'Ferie';
+      if(p.type == 2)
+        title = 'Permesso';
+      if(p.type == 3)
+        title = 'Assenza ingiustificata';
       events.push({
         tipologia: 'assenza',
         id: p._id,
-        title: p.type === 1 ? 'Ferie' : 'Permesso',
+        title: title,
         fullName: `${p.operatorId?.name ?? ''} ${p.operatorId?.lastName ?? ''}`,
         startDate: p.startDate.toISOString().split('T')[0],
         endDate: p.endDate.toISOString().split('T')[0],

@@ -32,8 +32,9 @@ export class PermissionHolidayService {
     }
     const operatorName = operator.businessName;
 
-    // 🔹 invia notifica real-time tramite Socket
-    this.notifications.sendNewAbsence(operatorName);
+    if(!result.read)
+      // 🔹 invia notifica real-time tramite Socket
+      this.notifications.sendNewAbsence(operatorName);
 
     return result;
   }
