@@ -34,3 +34,8 @@ export class Attendance {
 }
 
 export const AttendanceSchema = SchemaFactory.createForClass(Attendance);
+
+AttendanceSchema.index(
+  { operatorId: 1, date: 1 },
+  { unique: true }
+);

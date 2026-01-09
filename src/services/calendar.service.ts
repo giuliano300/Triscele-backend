@@ -177,6 +177,12 @@ export class CalendarService {
         date: a.date.toISOString().split('T')[0],
         startHour: a.entryTime,
         endHour: a.exitTime,
+
+        // 👉 BREAKS
+        breaks: a.breaks?.map(b => ({
+          start: b.start,
+          end: b.end
+        })) ?? []
       });
     });
 

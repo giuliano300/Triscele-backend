@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AttendanceDto } from 'src/dto/attendance.dto';
+import { normalizeDate } from 'src/enum/enum';
 import { Attendance, AttendanceDocument } from 'src/schemas/attendance.schema';
 
 @Injectable()
@@ -12,8 +13,22 @@ export class AttendanceService {
   ) {}
 
   async create(dto: AttendanceDto): Promise<Attendance> {
-    const created = new this.attendanceModel(dto);
-    return created.save();
+    const normalizedDate = normalizeDate(dto.date);
+    try {
+    const created = new this.attendanceModel({
+      ...dto,
+      date: normalizedDate
+    });
+
+    return await created.save();
+  } catch (error) {
+    if (error.code === 11000) {
+      throw new ConflictException(
+        'Esiste già una presenza per questo operatore in questa data'
+      );
+    }
+    throw error;
+  }
   }
 
   async findAll(operatorId?: string): Promise<Attendance[]> {
