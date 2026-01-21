@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { DuplicateProductDto } from 'src/dto/duplicateProduct.dto';
 import { CreateProductDto, UpdateProductDto } from 'src/dto/product.dto';
 import { Product } from 'src/schemas/product.schema';
 import { ProductService } from 'src/services/product.service';
@@ -54,8 +55,8 @@ export class ProductController {
   }
 
   @Post(':id/duplicate')
-  async duplicate(@Param('id') id: string): Promise<unknown> {
-    return this.productService.duplicate(id);
+  async duplicate(@Param('id') id: string, @Body() dto?: DuplicateProductDto): Promise<unknown> {
+    return this.productService.duplicate(id, dto);
   }
 
   @Put(':id')

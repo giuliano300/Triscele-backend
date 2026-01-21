@@ -8,6 +8,7 @@ import { Product, ProductDocument } from 'src/schemas/product.schema';
 import { Supplier } from 'src/schemas/suppliers.schema';
 import { ProductViewModel } from '../viewmodel/productViewModel';
 import { ProductMovements, ProductMovementsDocument } from 'src/schemas/product-movement.schema';
+import { DuplicateProductDto } from 'src/dto/duplicateProduct.dto';
 
 @Injectable()
 export class ProductService {
@@ -24,7 +25,7 @@ export class ProductService {
     return product.save();
   }
 
-  async duplicate(productId: string): Promise<Product> {
+  async duplicate(productId: string, dto?: DuplicateProductDto): Promise<Product> {
     // 1. Trova il prodotto originale
     const original = await this.productModel.findById(productId);
     if (!original) {
@@ -40,6 +41,15 @@ export class ProductService {
     delete duplicatedData.createdAt; // 👈 elimina il campo del tutto
     delete duplicatedData.updatedAt; // se esiste
     duplicatedData.name = `${duplicatedData.name} (Copia)`; // opzionale, per distinguere
+    duplicatedData.price = 0;
+    duplicatedData.cost = 0;
+    duplicatedData.stock = 0; 
+    duplicatedData.theshold = 0;
+    duplicatedData.supplierCode = '-';
+    duplicatedData.isNew = true;
+
+    if(dto)
+      duplicatedData.name = dto.name ?? '';
 
     // 3. Crea e salva il nuovo prodotto
     const duplicatedProduct = new this.productModel(duplicatedData);
@@ -122,7 +132,8 @@ export class ProductService {
           stock: product.stock,
           productMovements,
           subProducts: product.subProducts,
-          options: product.options
+          options: product.options,
+          isNew: product.isNew
         };
       })
     );
@@ -263,7 +274,8 @@ export class ProductService {
   async update(id: string, dto: UpdateProductDto): Promise<Product> {
     const updated = await this.productModel.findByIdAndUpdate(id, {
       ...dto,
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      isNew: false
     }, { new: true }).exec();
     if (!updated) throw new NotFoundException(`Product ${id} non trovato`);
     return updated;

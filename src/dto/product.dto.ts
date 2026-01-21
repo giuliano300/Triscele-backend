@@ -51,6 +51,10 @@ export class CreateProductDto {
   @IsString()
   purchasePackage?: string;
 
+  @IsOptional()
+  @IsBoolean()
+  isNew?: boolean;
+
 }
 
 export class UpdateProductDto extends CreateProductDto {}

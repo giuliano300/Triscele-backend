@@ -24,4 +24,5 @@ export interface ProductViewModel {
   productMovements?: ProductMovements[];
   subProducts?: SubProducts[];
   options: ProductOptions[];
+  isNew?:boolean;
 }

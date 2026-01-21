@@ -9,7 +9,7 @@ export type ProductDocument = Product & Document;
 
 @Schema()
 export class Product {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   name: string;
 
   // cambio da string a ObjectId con ref
@@ -62,6 +62,8 @@ export class Product {
   @Prop({ required: true })
   stock: number;
 
+  @Prop()
+  isNew?:boolean;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
