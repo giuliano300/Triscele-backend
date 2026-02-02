@@ -1,0 +1,76 @@
+import { IsNotEmpty, IsString, IsEnum, IsNumber, IsArray, IsOptional, IsBoolean } from 'class-validator';
+import { PaymentMethod } from 'src/enum/enum';
+import { OrderProducts } from 'src/interfaces/orderProduct';
+
+export class CreateOrderDto {
+  @IsNotEmpty()
+  @IsString()
+  customerId: string;
+
+  @IsString()
+  @IsOptional()
+  operatorId?: string;
+
+  @IsString()
+  @IsOptional()
+  sectorId?: string;
+
+  @IsString()
+  @IsOptional()
+  status?: string;
+
+  @IsNotEmpty()
+  insertDate: Date;
+
+  @IsNotEmpty()
+  @IsEnum(PaymentMethod)
+  paymentMethod: PaymentMethod;
+
+  @IsNotEmpty()
+  expectedDelivery: Date;
+
+  @IsString()
+  agentId?: string;
+
+  @IsNotEmpty()
+  shippingAddress: string;
+
+  @IsNotEmpty()
+  shippingZipcode: string;
+
+  @IsNotEmpty()
+  shippingProvince: string;
+
+  @IsNotEmpty()
+  shippingCity: string;
+
+  shippingName?: string;
+  shippingLastName?: string;
+
+  @IsNotEmpty()
+  shippingBusinessName: string;
+
+  @IsNotEmpty()
+  shippingTelephone: string;
+
+  @IsNotEmpty()
+  shippingEmail: string;
+
+  note?: string;
+  customerNote?: string;
+
+  @IsNotEmpty()
+  @IsArray()
+  orderProducts: OrderProducts[];
+
+  @IsNotEmpty()
+  @IsNumber()
+  totalPrice: number;
+
+  @IsOptional()
+  @IsBoolean()
+  isCustomer?: boolean;
+
+}
+
+export class UpdateOrderDto extends CreateOrderDto {}
