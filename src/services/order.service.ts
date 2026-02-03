@@ -6,7 +6,7 @@ import { Model, Types } from 'mongoose';
 import { CreateOrderDto, UpdateOrderDto } from 'src/dto/order.dto';
 import { UpdateOnlyOperatorDataOrderDto } from 'src/dto/update-only-operator-data-order';
 import { OrderChangeState } from 'src/interfaces/order-change-state';
-import { NotificationsGateway } from 'src/notifications/notifications.gateway';
+import { NotificationsGateway } from 'src/notification/notification.gateway';
 import { Customer, CustomerDocument } from 'src/schemas/customers.schema';
 import { Operator, OperatorDocument } from 'src/schemas/operators.schema';
 import { OrderState, OrderStateDocument } from 'src/schemas/order-state.schema';

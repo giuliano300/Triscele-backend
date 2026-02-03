@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { Illness, IllnessDocument } from 'src/schemas/illness.schema';
 import { IllnessDto } from 'src/dto/illness.dto';
 import { Operator, OperatorDocument } from 'src/schemas/operators.schema';
-import { NotificationsGateway } from 'src/notifications/notifications.gateway';
+import { NotificationsGateway } from 'src/notification/notification.gateway';
 
 @Injectable()
 export class IllnessService {

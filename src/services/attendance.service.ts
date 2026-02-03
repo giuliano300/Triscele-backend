@@ -45,6 +45,7 @@ export class AttendanceService {
   }
 
   async update(id: string, dto: Partial<AttendanceDto>): Promise<Attendance | null> {
+    dto.date = normalizeDate(dto.date!);
     return this.attendanceModel.findByIdAndUpdate(id, dto, { new: true }).exec();
   }
 

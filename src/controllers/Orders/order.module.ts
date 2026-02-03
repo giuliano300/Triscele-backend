@@ -6,7 +6,7 @@ import { OrderService } from 'src/services/order.service';
 import { Product, ProductSchema } from 'src/schemas/product.schema';
 import { Operator, OperatorSchema } from 'src/schemas/operators.schema';
 import { OrderState, OrderStateSchema } from 'src/schemas/order-state.schema';
-import { NotificationModule } from 'src/notifications/notifications.module';
+import { NotificationModule } from 'src/notification/notification.module';
 import { Customer, CustomerSchema } from 'src/schemas/customers.schema';
 
 @Module({

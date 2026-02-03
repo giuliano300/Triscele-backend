@@ -3,7 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PermissionHolidayDto } from 'src/dto/permission-holiday.dto';
-import { NotificationsGateway } from 'src/notifications/notifications.gateway';
+import { NotificationsGateway } from 'src/notification/notification.gateway';
 import { Operator, OperatorDocument } from 'src/schemas/operators.schema';
 import { PermissionHoliday, PermissionHolidayDocument } from 'src/schemas/permission-holiday.schema';
 
