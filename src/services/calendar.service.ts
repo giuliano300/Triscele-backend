@@ -167,6 +167,14 @@ export class CalendarService {
 
     // Attendance → PRESENCE
     attendances.forEach(a => {
+
+      const permissionMinutes =
+      this.calculatePermissionMinutesForDay(
+        permissions,
+        a.operatorId._id,
+        a.date
+      );
+
       events.push({
         tipologia: 'presenza',
         id: a._id,
@@ -177,7 +185,8 @@ export class CalendarService {
         date: a.date.toISOString().split('T')[0],
         startHour: a.entryTime,
         endHour: a.exitTime,
-
+        permissionMinutes,
+        
         // 👉 BREAKS
         breaks: a.breaks?.map(b => ({
           start: b.start,
@@ -220,4 +229,43 @@ export class CalendarService {
     return events;
   }
 
+  toMinutes = (time: string) => {
+    const [h, m] = time.split(':').map(Number);
+    return h * 60 + m;
+  };
+
+  calculatePermissionMinutesForDay(
+    permissions: any[],
+    operatorId: string,
+    day: Date
+  ): number {
+
+    const dayStart = new Date(day);
+    dayStart.setHours(0, 0, 0, 0);
+
+    const dayEnd = new Date(day);
+    dayEnd.setHours(23, 59, 59, 999);
+
+    let minutes = 0;
+
+    permissions.forEach(p => {
+      if (
+        p.type !== 2 || // solo PERMESSO
+        String(p.operatorId?._id) !== String(operatorId)
+      ) return;
+
+      // verifica sovrapposizione giorno
+      if (p.startDate > dayEnd || p.endDate < dayStart) return;
+
+      // permesso orario
+      if (p.startHour && p.endHour) {
+        minutes += Math.max(
+          0,
+          this.toMinutes(p.endHour) - this.toMinutes(p.startHour)
+        );
+      }
+    });
+
+    return minutes;
+  }
 }
