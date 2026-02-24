@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class ProductUpDto {
   @IsString()
@@ -13,5 +13,13 @@ export class ProductUpDto {
   @IsString()
   @IsNotEmpty()
   stock_type: string;
+
+  @Type(() => Number) 
+  @IsNumber()
+  quantity: number;
+
+  @Type(() => Boolean) 
+  @IsBoolean()
+  selected: boolean;
 
 }
