@@ -19,7 +19,8 @@ export enum OptionType{
   text,
   textarea,
   date,
-  color
+  color,
+  multiproduct
 }
 
 export enum UserRole {
