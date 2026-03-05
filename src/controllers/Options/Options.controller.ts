@@ -32,4 +32,9 @@ export class OptionsController {
   remove(@Param('id') id: string): Promise<boolean> {
     return this.optionsService.remove(id);
   }
+
+    @Post(':id/duplicate')
+    async duplicate(@Param('id') id: string): Promise<unknown> {
+      return this.optionsService.duplicate(id);
+    }
 }

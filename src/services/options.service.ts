@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -73,4 +74,22 @@ export class OptionsService {
     else
       return true;
   }
+
+  async duplicate(id: string): Promise<Options> {
+
+    const original = await this.productsOptionsModel.findById(id).lean();
+
+    if (!original) {
+      throw new NotFoundException('Opzione non trovata');
+    }
+
+    const { _id, createdAt, updatedAt, __v, ...duplicatedData } = original;
+
+    const newOption = new this.productsOptionsModel({
+      ...duplicatedData,
+      name: `${duplicatedData.name} (Copia)`
+    });
+
+    return newOption.save();
+  }  
 }
