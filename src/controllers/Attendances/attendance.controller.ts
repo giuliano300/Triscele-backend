@@ -46,6 +46,22 @@ export class AttendanceController {
     return this.attendanceService.update(id, dto);
   }
 
+  @Post(':id/break')
+  async addBreak(
+    @Param('id') id: string,
+    @Body() breakItem: { start: string; end: string }
+  ) {
+    return this.attendanceService.addBreak(id, breakItem);
+  }
+
+  @Delete(':id/break')
+  async removeBreak(
+    @Param('id') id: string,
+    @Body() breakItem: { start: string; end: string }
+  ) {
+    return this.attendanceService.removeBreak(id, breakItem);
+  }
+
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return this.attendanceService.delete(id);

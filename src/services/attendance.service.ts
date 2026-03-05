@@ -49,6 +49,33 @@ export class AttendanceService {
     return this.attendanceModel.findByIdAndUpdate(id, dto, { new: true }).exec();
   }
 
+  async addBreak(id: string, breakItem: { start: string; end: string }): Promise<Attendance | null> {
+
+      return this.attendanceModel.findByIdAndUpdate(
+      id,
+      {
+        $push: {
+          breaks: {
+            $each: [breakItem],
+            $sort: { start: 1 }   // ordina per start crescente
+          }
+        }
+      },
+      { new: true }
+    ).exec();
+
+  }
+
+  async removeBreak(id: string, breakItem: { start: string; end: string }): Promise<Attendance | null> {
+
+    return this.attendanceModel.findByIdAndUpdate(
+      id,
+      { $pull: { breaks: breakItem } },
+      { new: true }
+    ).exec();
+
+  }
+
   async delete(id: string): Promise<Attendance | null> {
     return this.attendanceModel.findByIdAndDelete(id).exec();
   }
