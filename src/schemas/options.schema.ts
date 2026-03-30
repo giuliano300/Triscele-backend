@@ -17,8 +17,11 @@ export class Options {
   @Prop({ required: true })
   optionType: OptionType;
   
-  @Prop()
-  products: ProductUpDto[]
+  @Prop({ type: [Object] })
+  children?: Options[];
+
+  @Prop({ type: [Object] })
+  products?: ProductUpDto[];
 
   @Prop()
   createdAt?: Date;

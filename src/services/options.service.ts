@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -10,7 +11,7 @@ import { Options } from 'src/schemas/options.schema';
 export class OptionsService {
   constructor(
     @InjectModel(Options.name) 
-    private productsOptionsModel: Model<Options>,
+    private optionModel: Model<Options>,
   ) {}
 
   // Crea una nuova Options
@@ -18,9 +19,13 @@ export class OptionsService {
 
     // eslint-disable-next-line no-useless-catch
     try {
-      // 1. Creazione movimento
-      const pm = new this.productsOptionsModel({
+      const cleanChildren = (p.children || []).map(c =>
+        this.sanitizeOption(c)
+      );
+    
+      const pm = new this.optionModel({
         ...p,
+        children: cleanChildren,
         createdAt: new Date(),
       });
 
@@ -36,12 +41,12 @@ export class OptionsService {
 
   // Recupera tutte le Options
   async findAll(): Promise<Options[]> {
-    return this.productsOptionsModel.find().sort({ createdAt: -1 }).exec();
+    return this.optionModel.find().sort({ createdAt: -1 }).exec();
   }
 
   // Recupera una Options per ID
   async findOne(id: string): Promise<Options> {
-    const cat = await this.productsOptionsModel.findById(id).exec();
+    const cat = await this.optionModel.findById(id).exec();
     if (!cat) {
       throw new NotFoundException(`Option con ID ${id} non trovato`);
     }
@@ -50,10 +55,14 @@ export class OptionsService {
 
   // Aggiorna una Options per ID
   async update(id: string, p: UpdateOptionsDto): Promise<boolean> {
-    const cat = await this.productsOptionsModel
+    const cleanChildren = (p.children || []).map(c =>
+      this.sanitizeOption(c)
+    );
+    const cat = await this.optionModel
       .findByIdAndUpdate(id, 
         {
           ...p,
+          children: cleanChildren,
           updatedAt: new Date()
         }, 
         { new: true })
@@ -66,7 +75,7 @@ export class OptionsService {
 
   // Rimuove una Options per ID
   async remove(id: string): Promise<boolean> {
-    const cat = await this.productsOptionsModel.findByIdAndDelete(id).exec();
+    const cat = await this.optionModel.findByIdAndDelete(id).exec();
     if (!cat) {
       //throw new NotFoundException(`Options con ID ${id} non trovato`);
       return false;
@@ -77,7 +86,7 @@ export class OptionsService {
 
   async duplicate(id: string): Promise<Options> {
 
-    const original = await this.productsOptionsModel.findById(id).lean();
+    const original = await this.optionModel.findById(id).lean();
 
     if (!original) {
       throw new NotFoundException('Opzione non trovata');
@@ -85,11 +94,30 @@ export class OptionsService {
 
     const { _id, createdAt, updatedAt, __v, ...duplicatedData } = original;
 
-    const newOption = new this.productsOptionsModel({
+    const newOption = new this.optionModel({
       ...duplicatedData,
       name: `${duplicatedData.name} (Copia)`
     });
 
     return newOption.save();
   }  
+
+
+  async searchByName(name: string): Promise<Options[]> {
+    return this.optionModel.find({
+      name: { $regex: name, $options: 'i' }
+    }).limit(10);
+  }
+
+  private sanitizeOption(option: any): any {
+    return {
+      _id: option._id,
+      name: option.name,
+      optionType: option.optionType,
+      products: option.products || [],
+      children: (option.children || []).map((c: any) =>
+        this.sanitizeOption(c)
+      )
+    };
+  }
 }

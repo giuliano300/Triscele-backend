@@ -1,7 +1,8 @@
 import { Type } from "class-transformer";
-import { IsArray, IsEnum, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsEnum, IsOptional, IsString, ValidateNested } from "class-validator";
 import { ProductUpDto } from "./productUp.dto";
 import { OptionType } from "src/enum/enum";
+import { OptionChildDto } from "./option-child.dto";
 
 export class UpdateOptionsDto {
 
@@ -18,4 +19,10 @@ export class UpdateOptionsDto {
   @ValidateNested({ each: true })
   @Type(() => ProductUpDto)
   products: ProductUpDto[]
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => OptionChildDto)
+  children?: OptionChildDto[];
 }

@@ -1,7 +1,10 @@
-import { ProductsOptions } from "src/schemas/products-options.schema";
+import { ProductUpDto } from "src/dto/productUp.dto";
+import { Options } from "src/schemas/options.schema";
 
 export interface ProductOptions {
   _id: string;
   position: number;
-  option: ProductsOptions;
+  option: Options;
+  parent?: Options;
+  parentProduct?: ProductUpDto;
 }
