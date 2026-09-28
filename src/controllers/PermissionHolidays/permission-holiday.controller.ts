@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Body, Controller, Delete, Get, Param, Post, Put, HttpException, HttpStatus, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, HttpException, HttpStatus, Query, Logger } from '@nestjs/common';
 import { PermissionHolidayDto } from 'src/dto/permission-holiday.dto';
 import { OperatorService } from 'src/services/operators.service';
 import { PermissionHolidayService } from 'src/services/permission-holiday.service';
 
 @Controller('permission-holiday')
 export class PermissionHolidayController {
+  private readonly logger = new Logger(PermissionHolidayController.name);
+
   constructor(private readonly permissionHolidayService: PermissionHolidayService, private readonly operatorService: OperatorService) {}
 
   @Post()
@@ -53,16 +55,25 @@ export class PermissionHolidayController {
     @Param('id') id: string,
     @Body() dto: PermissionHolidayDto
   ): Promise<any> {
+    const totalStartedAt = Date.now();
 
     // Se la richiesta non è accettata, aggiorna solo il DTO
     if (!dto.accepted) {
+      const updateStartedAt = Date.now();
       const updated = await this.permissionHolidayService.update(id, dto);
+      this.logger.log(
+        `[approveOrNotPermissionHoliday:${id}] aggiornamento richiesta rifiutata/in attesa: ${Date.now() - updateStartedAt} ms; totale: ${Date.now() - totalStartedAt} ms`,
+      );
       return updated 
         ? { success: true, msg: 'Aggiornamento completato' }
         : { success: false, msg: 'Errore nell\'aggiornamento' };
     }
 
+    const operatorLookupStartedAt = Date.now();
     const operator = await this.operatorService.find(dto.operatorId);
+    this.logger.log(
+      `[approveOrNotPermissionHoliday:${id}] ricerca operatore ${dto.operatorId}: ${Date.now() - operatorLookupStartedAt} ms`,
+    );
     if (!operator) {
       return { success: false, msg: 'Non esiste l\'operatore' };
     }
@@ -79,7 +90,11 @@ export class PermissionHolidayController {
         return { success: false, msg: 'Giorni di ferie insufficienti' };
       }
 
+      const balanceUpdateStartedAt = Date.now();
       await this.operatorService.deductHolidays(operator.id, amountToDeduct);
+      this.logger.log(
+        `[approveOrNotPermissionHoliday:${id}] aggiornamento ferie residue (-${amountToDeduct}): ${Date.now() - balanceUpdateStartedAt} ms`,
+      );
 
     } 
     else 
@@ -100,11 +115,19 @@ export class PermissionHolidayController {
         return { success: false, msg: 'Ore di permesso insufficienti' };
       }
 
+      const balanceUpdateStartedAt = Date.now();
       await this.operatorService.deductPermissions(operator.id, amountToDeduct);
+      this.logger.log(
+        `[approveOrNotPermissionHoliday:${id}] aggiornamento ore residue (-${amountToDeduct}): ${Date.now() - balanceUpdateStartedAt} ms`,
+      );
     }
 
     // Aggiorna la richiesta
+    const requestUpdateStartedAt = Date.now();
     const updated = await this.permissionHolidayService.update(id, dto);
+    this.logger.log(
+      `[approveOrNotPermissionHoliday:${id}] aggiornamento richiesta: ${Date.now() - requestUpdateStartedAt} ms; totale: ${Date.now() - totalStartedAt} ms`,
+    );
     return updated
       ? { success: true, msg: 'Aggiornamento completato' }
       : { success: false, msg: 'Errore nell\'aggiornamento' };

@@ -6,7 +6,7 @@ import { Model, Types } from 'mongoose';
 import { CreateOrderDto, UpdateOrderDto } from 'src/dto/order.dto';
 import { UpdateOnlyOperatorDataOrderDto } from 'src/dto/update-only-operator-data-order';
 import { OrderChangeState } from 'src/interfaces/order-change-state';
-import { NotificationsGateway } from 'src/notification/notification.gateway';
+import { NotificationsService } from 'src/services/notification.service';
 import { Customer, CustomerDocument } from 'src/schemas/customers.schema';
 import { Operator, OperatorDocument } from 'src/schemas/operators.schema';
 import { OrderState, OrderStateDocument } from 'src/schemas/order-state.schema';
@@ -16,7 +16,7 @@ import { Product, ProductDocument } from 'src/schemas/product.schema';
 @Injectable()
 export class OrderService {
   constructor(
-    private notifications: NotificationsGateway,
+    private notifications: NotificationsService,
     @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
     @InjectModel(Product.name) private productModel: Model<ProductDocument>,
     @InjectModel(Operator.name) private operatorModel: Model<OperatorDocument>,
@@ -53,7 +53,12 @@ export class OrderService {
       }
       const customerName = customer.businessName;
 
-      this.notifications.sendNewQuotation(customerName);
+      void this.notifications.create(
+        null,
+        'admin',
+        'sendNewQuotation',
+        { p: customerName },
+      ).catch(() => undefined);
     }
 
     return result;
@@ -197,7 +202,12 @@ export class OrderService {
       );
 
       
-        this.notifications.createOrderFromQuotation((existingOrder.customerId as Types.ObjectId).toString(), (existingOrder._id as Types.ObjectId).toString());
+        void this.notifications.create(
+          (existingOrder.customerId as Types.ObjectId).toString(),
+          'customer',
+          'createOrderFromQuotation',
+          { id: (existingOrder._id as Types.ObjectId).toString() },
+        ).catch(() => undefined);
 
 
       return updated as Order;
@@ -253,9 +263,19 @@ export class OrderService {
       const status = await this.orderStateModel.findById(dto.status).lean();
       if(status){
         if(existingOrder.status)
-          this.notifications.updateOrderStatus((existingOrder.customerId as Types.ObjectId).toString(), (existingOrder._id as Types.ObjectId).toString(), status.name );
+          void this.notifications.create(
+            (existingOrder.customerId as Types.ObjectId).toString(),
+            'customer',
+            'updateOrderStatus',
+            { id: (existingOrder._id as Types.ObjectId).toString(), status: status.name },
+          ).catch(() => undefined);
         else
-          this.notifications.createOrderFromQuotation((existingOrder.customerId as Types.ObjectId).toString(), (existingOrder._id as Types.ObjectId).toString());
+          void this.notifications.create(
+            (existingOrder.customerId as Types.ObjectId).toString(),
+            'customer',
+            'createOrderFromQuotation',
+            { id: (existingOrder._id as Types.ObjectId).toString() },
+          ).catch(() => undefined);
       }
 
     }

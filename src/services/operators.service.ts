@@ -96,18 +96,24 @@ export class OperatorService {
   }
 
   async deductHolidays(operatorId: string, days: number) {
-    await this.OperatorModel.findByIdAndUpdate(
-      operatorId,
+    const result = await this.OperatorModel.updateOne(
+      { _id: operatorId },
       { $inc: { remainingNumberOfHolidays: -days } },
-      { new: true }
-    );
+    ).exec();
+
+    if (result.matchedCount === 0) {
+      throw new NotFoundException(`Operator con ID ${operatorId} non trovato`);
+    }
   }
 
   async deductPermissions(operatorId: string, hours: number) {
-    await this.OperatorModel.findByIdAndUpdate(
-      operatorId,
+    const result = await this.OperatorModel.updateOne(
+      { _id: operatorId },
       { $inc: { remainingNumberOfPermissions: -hours } },
-      { new: true }
-    );
+    ).exec();
+
+    if (result.matchedCount === 0) {
+      throw new NotFoundException(`Operator con ID ${operatorId} non trovato`);
+    }
   }
 }

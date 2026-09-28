@@ -4,12 +4,12 @@ import { Model } from 'mongoose';
 import { Illness, IllnessDocument } from 'src/schemas/illness.schema';
 import { IllnessDto } from 'src/dto/illness.dto';
 import { Operator, OperatorDocument } from 'src/schemas/operators.schema';
-import { NotificationsGateway } from 'src/notification/notification.gateway';
+import { NotificationsService } from 'src/services/notification.service';
 
 @Injectable()
 export class IllnessService {
   constructor(
-    private notifications: NotificationsGateway,
+    private notifications: NotificationsService,
     @InjectModel(Illness.name) private IllnessModel: Model<IllnessDocument>,
     @InjectModel(Operator.name)
     private readonly operatorModel: Model<OperatorDocument>, // 🔹 iniezione modello operator
@@ -32,8 +32,12 @@ export class IllnessService {
     }
     const operatorName = operator.businessName;
 
-    // 🔹 invia notifica real-time tramite Socket
-    this.notifications.sendNewAbsence(operatorName);
+    void this.notifications.create(
+      null,
+      'admin',
+      'newAbsence',
+      { operatorName },
+    ).catch(() => undefined);
 
 
     return result;

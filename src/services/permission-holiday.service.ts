@@ -3,14 +3,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PermissionHolidayDto } from 'src/dto/permission-holiday.dto';
-import { NotificationsGateway } from 'src/notification/notification.gateway';
+import { NotificationsService } from 'src/services/notification.service';
 import { Operator, OperatorDocument } from 'src/schemas/operators.schema';
 import { PermissionHoliday, PermissionHolidayDocument } from 'src/schemas/permission-holiday.schema';
 
 @Injectable()
 export class PermissionHolidayService {
   constructor(
-    private notifications: NotificationsGateway,
+    private notifications: NotificationsService,
     @InjectModel(PermissionHoliday.name)
     private readonly permissionHolidayModel: Model<PermissionHolidayDocument>,
     @InjectModel(Operator.name)
@@ -32,9 +32,14 @@ export class PermissionHolidayService {
     }
     const operatorName = operator.businessName;
 
-    if(!result.read)
-      // 🔹 invia notifica real-time tramite Socket
-      this.notifications.sendNewAbsence(operatorName);
+    if (!result.read) {
+      void this.notifications.create(
+        null,
+        'admin',
+        'newAbsence',
+        { operatorName },
+      ).catch(() => undefined);
+    }
 
     return result;
   }
@@ -73,8 +78,14 @@ export class PermissionHolidayService {
       .exec();
 
     // 3. Invio notifica SOLO se prima era null
-    if (old.accepted === null && p!.accepted !== null)
-      this.notifications.confirmAbsence(p!);
+    if (old.accepted === null && p!.accepted !== null) {
+      void this.notifications.create(
+        p!.operatorId.toString(),
+        'operator',
+        'confirmAbsence',
+        { p },
+      ).catch(() => undefined);
+    }
 
     //4. Reinvia la notifica se viene rimessa in attesa
     if(old.accepted != null && p?.accepted == null)
@@ -85,7 +96,12 @@ export class PermissionHolidayService {
         }
         const operatorName = operator.businessName;
 
-        this.notifications.sendNewAbsence(operatorName);
+        void this.notifications.create(
+          null,
+          'admin',
+          'newAbsence',
+          { operatorName },
+        ).catch(() => undefined);
     }
 
     return p;
