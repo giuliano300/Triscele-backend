@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateProductDto, UpdateProductDto } from 'src/dto/product.dto';
 import { Category } from 'src/schemas/category.schema';
 import { Product, ProductDocument } from 'src/schemas/product.schema';
@@ -74,8 +74,13 @@ export class ProductService {
   }> {
     // 🔹 Costruzione filtro dinamico
     const filter: any = {};
-    if (categoryId) filter.categoryId = categoryId;
-    if (supplierId) filter.supplierId = supplierId;
+  if (categoryId) {
+    filter.categoryId = new Types.ObjectId(categoryId);
+  }
+
+  if (supplierId) {
+    filter.supplierId = new Types.ObjectId(supplierId);
+  }
     if (name) filter.name = { $regex: name, $options: 'i' };
 
     // 🔹 Calcolo offset
