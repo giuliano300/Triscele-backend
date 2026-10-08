@@ -13,6 +13,12 @@ export type OrderDocument = Order & Document;
 
 @Schema()
 export class Order {
+  @Prop({ unique: true, sparse: true })
+  orderNumber?: number;
+
+  @Prop({ unique: true, sparse: true })
+  quoteNumber?: number;
+
   @Prop({ type: Types.ObjectId, ref: Customer.name, required: true })
   customerId: Types.ObjectId;
 
@@ -88,8 +94,14 @@ export class Order {
   updatedAt?: Date;
 
   @Prop()
+  approvedAt?: Date;
+
+  @Prop()
   orderChangeState: OrderChangeState[];
 
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);
+
+OrderSchema.index({ status: 1, insertDate: -1 });
+OrderSchema.index({ status: 1, approvedAt: -1 });

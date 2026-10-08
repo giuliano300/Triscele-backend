@@ -1,6 +1,6 @@
 /* eslint-disable no-dupe-else-if */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateOrderDto, UpdateOrderDto } from 'src/dto/order.dto';
@@ -12,9 +12,10 @@ import { Operator, OperatorDocument } from 'src/schemas/operators.schema';
 import { OrderState, OrderStateDocument } from 'src/schemas/order-state.schema';
 import { Order, OrderDocument } from 'src/schemas/order.schema';
 import { Product, ProductDocument } from 'src/schemas/product.schema';
+import { DocumentCounter, DocumentCounterDocument } from 'src/schemas/document-counter.schema';
 
 @Injectable()
-export class OrderService {
+export class OrderService implements OnModuleInit {
   constructor(
     private notifications: NotificationsService,
     @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
@@ -22,13 +23,164 @@ export class OrderService {
     @InjectModel(Operator.name) private operatorModel: Model<OperatorDocument>,
     @InjectModel(OrderState.name) private orderStateModel: Model<OrderStateDocument>,
     @InjectModel(Customer.name) private readonly customerModel: Model<CustomerDocument>,
-    
-    
+    @InjectModel(DocumentCounter.name) private documentCounterModel: Model<DocumentCounterDocument>,
   ) {}
 
+  async onModuleInit(): Promise<void> {
+    await this.backfillDocumentNumbers();
+  }
+
+  private async getNextDocumentNumber(key: 'quote' | 'order'): Promise<number> {
+    const counter = await this.documentCounterModel.findOneAndUpdate(
+      { key },
+      { $inc: { sequence: 1 } },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    ).exec();
+
+    return counter.sequence;
+  }
+
+  private async reserveDocumentNumbers(
+    key: 'quote' | 'order',
+    quantity: number
+  ): Promise<number[]> {
+    if (quantity === 0) return [];
+
+    const counter = await this.documentCounterModel.findOneAndUpdate(
+      { key },
+      { $inc: { sequence: quantity } },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    ).exec();
+    const firstNumber = counter.sequence - quantity + 1;
+
+    return Array.from({ length: quantity }, (_, index) => firstNumber + index);
+  }
+
+  private async syncCounter(key: 'quote' | 'order', value: number): Promise<void> {
+    await this.documentCounterModel.updateOne(
+      { key },
+      { $max: { sequence: value } },
+      { upsert: true, setDefaultsOnInsert: true }
+    ).exec();
+  }
+
+  /**
+   * Assegna una numerazione ai documenti creati prima dell'introduzione dei
+   * progressivi separati. I preventivi e gli ordini usano contatori distinti.
+   */
+  private async backfillDocumentNumbers(): Promise<void> {
+    const [latestQuote, latestOrder] = await Promise.all([
+      this.orderModel
+        .findOne({ quoteNumber: { $type: 'number' } })
+        .sort({ quoteNumber: -1 })
+        .select('quoteNumber')
+        .lean(),
+      this.orderModel
+        .findOne({ orderNumber: { $type: 'number' } })
+        .sort({ orderNumber: -1 })
+        .select('orderNumber')
+        .lean()
+    ]);
+
+    await Promise.all([
+      this.syncCounter('quote', latestQuote?.quoteNumber ?? 0),
+      this.syncCounter('order', latestOrder?.orderNumber ?? 0)
+    ]);
+
+    const missingNumber = [
+      { quoteNumber: { $exists: false } },
+      { quoteNumber: null }
+    ];
+    const missingOrderNumber = [
+      { orderNumber: { $exists: false } },
+      { orderNumber: null }
+    ];
+
+    const [quotes, orders] = await Promise.all([
+      this.orderModel
+        .find({ status: null, $or: missingNumber })
+        .sort({ createdAt: 1, _id: 1 })
+        .select('_id')
+        .lean(),
+      this.orderModel
+        .find({ status: { $ne: null }, $or: missingOrderNumber })
+        .sort({ createdAt: 1, _id: 1 })
+        .select('_id')
+        .lean()
+    ]);
+
+    const [quoteNumbers, orderNumbers] = await Promise.all([
+      this.reserveDocumentNumbers('quote', quotes.length),
+      this.reserveDocumentNumbers('order', orders.length)
+    ]);
+
+    await Promise.all([
+      quotes.length
+        ? this.orderModel.bulkWrite(
+            quotes.map((quote, index) => ({
+              updateOne: {
+                filter: {
+                  _id: quote._id,
+                  $or: [
+                    { quoteNumber: { $exists: false } },
+                    { quoteNumber: null }
+                  ]
+                },
+                update: { $set: { quoteNumber: quoteNumbers[index] } }
+              }
+            }))
+          )
+        : Promise.resolve(),
+      orders.length
+        ? this.orderModel.bulkWrite(
+            orders.map((order, index) => ({
+              updateOne: {
+                filter: {
+                  _id: order._id,
+                  $or: [
+                    { orderNumber: { $exists: false } },
+                    { orderNumber: null }
+                  ]
+                },
+                update: { $set: { orderNumber: orderNumbers[index] } }
+              }
+            }))
+          )
+        : Promise.resolve()
+    ]);
+
+    await this.orderModel.updateMany(
+      {
+        status: { $ne: null },
+        $or: [
+          { approvedAt: { $exists: false } },
+          { approvedAt: null }
+        ]
+      },
+      [
+        {
+          $set: {
+            approvedAt: {
+              $cond: [
+                { $eq: [{ $type: '$quoteNumber' }, 'number'] },
+                { $ifNull: ['$updatedAt', { $ifNull: ['$createdAt', '$insertDate'] }] },
+                { $ifNull: ['$createdAt', '$insertDate'] }
+              ]
+            }
+          }
+        }
+      ]
+    ).exec();
+  }
+
   async create(dto: CreateOrderDto): Promise<Order> {
+    const isQuote = !dto.status;
+    const documentNumber = await this.getNextDocumentNumber(isQuote ? 'quote' : 'order');
     const createdOrder = new this.orderModel({
       ...dto,
+      ...(isQuote
+        ? { quoteNumber: documentNumber }
+        : { orderNumber: documentNumber, approvedAt: new Date() }),
       customerId: new Types.ObjectId(dto.customerId),
       operatorId: dto.operatorId  ? new Types.ObjectId(dto.operatorId) : null,
       status: dto.status  ? new Types.ObjectId(dto.status) : null,
@@ -186,7 +338,12 @@ export class OrderService {
         throw new NotFoundException(`Order ${dto.orderId} non trovato`);
       }
 
+      const orderNumber = existingOrder.orderNumber
+        ?? await this.getNextDocumentNumber('order');
+
       const updateData: any = {
+        orderNumber,
+        approvedAt: existingOrder.approvedAt ?? new Date(),
         sectorId: Types.ObjectId.createFromHexString(dto.sectorId),
         updatedAt: new Date(),
         status: dto.status,
@@ -289,6 +446,13 @@ export class OrderService {
       orderChangeState: changeState,
     };
 
+    if (!existingOrder.status && dto.status) {
+      if (!existingOrder.orderNumber) {
+        updateData.orderNumber = await this.getNextDocumentNumber('order');
+      }
+      updateData.approvedAt = existingOrder.approvedAt ?? new Date();
+    }
+
    updateData.operatorId = dto.operatorId ? new Types.ObjectId(dto.operatorId) : null;
 
     const updated = await this.orderModel.findByIdAndUpdate(id, updateData, { new: true });
@@ -335,6 +499,13 @@ export class OrderService {
       status: dto.status,
       orderChangeState: changeState,
     };
+
+    if (!existingOrder.status && dto.status) {
+      if (!existingOrder.orderNumber) {
+        updateData.orderNumber = await this.getNextDocumentNumber('order');
+      }
+      updateData.approvedAt = existingOrder.approvedAt ?? new Date();
+    }
 
    updateData.operatorId = dto.operatorId ? new Types.ObjectId(dto.operatorId) : null;
 

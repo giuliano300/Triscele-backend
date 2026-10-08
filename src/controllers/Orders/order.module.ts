@@ -8,11 +8,13 @@ import { Operator, OperatorSchema } from 'src/schemas/operators.schema';
 import { OrderState, OrderStateSchema } from 'src/schemas/order-state.schema';
 import { NotificationModule } from 'src/notification/notification.module';
 import { Customer, CustomerSchema } from 'src/schemas/customers.schema';
+import { DocumentCounter, DocumentCounterSchema } from 'src/schemas/document-counter.schema';
 
 @Module({
   imports: [
     NotificationModule,
     MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
+    MongooseModule.forFeature([{ name: DocumentCounter.name, schema: DocumentCounterSchema }]),
     MongooseModule.forFeature([{ name: Customer.name, schema: CustomerSchema }]),
     MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
     MongooseModule.forFeature([{ name: Operator.name, schema: OperatorSchema }]),

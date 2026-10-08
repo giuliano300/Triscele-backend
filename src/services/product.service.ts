@@ -75,11 +75,11 @@ export class ProductService {
     // 🔹 Costruzione filtro dinamico
     const filter: any = {};
   if (categoryId) {
-    filter.categoryId = new Types.ObjectId(categoryId);
+    filter.categoryId = categoryId;
   }
 
   if (supplierId) {
-    filter.supplierId = new Types.ObjectId(supplierId);
+    filter.supplierId = supplierId;
   }
     if (name) filter.name = { $regex: name, $options: 'i' };
 
@@ -195,22 +195,31 @@ export class ProductService {
   async findLowStock(): Promise<ProductViewModel[]> {
     const products = await this.productModel
       .find({
-        $expr: { $gt: ['$theshold', '$stock'] } // theshold > stock
+        $expr: { $gt: ['$theshold', '$stock'] }
       })
       .populate({ path: 'categoryId', select: 'name' })
-      .populate({ path: 'supplierId', select: 'name lastName supplierCode businessName' })
+      .populate({
+        path: 'supplierId',
+        select: 'name lastName supplierCode businessName'
+      })
       .sort({ createdAt: -1 })
       .lean()
       .exec();
 
     return await Promise.all(
       products.map(async product => {
-        const category = product.categoryId as unknown as Category;
-        const supplier = product.supplierId as unknown as Supplier;
+        const category = product.categoryId
+          ? (product.categoryId as unknown as Category)
+          : null;
+
+        const supplier = product.supplierId
+          ? (product.supplierId as unknown as Supplier)
+          : null;
 
         const productMovements = await this.productMovementModel
           .find({ productId: String(product._id) })
           .sort({ createdAt: -1 })
+          .lean()
           .exec();
 
         return {
@@ -225,19 +234,26 @@ export class ProductService {
           files: product.files,
           purchasePackage: product.purchasePackage,
           supplierCode: product.supplierCode,
-          categoryId: String(product.categoryId._id),
-          supplierId: String(product.supplierId._id),
-          category: category,
-          supplier: supplier,
+
+          categoryId: product.categoryId
+            ? String((product.categoryId as any)._id ?? product.categoryId)
+            : '',
+
+          supplierId: product.supplierId
+            ? String((product.supplierId as any)._id ?? product.supplierId)
+            : '',
+
+          category,
+          supplier,
           stock: product.stock,
-          productMovements: productMovements,
+          productMovements,
           subProducts: product.subProducts,
-          options: product.options
-       };
+          options: product.options,
+          isNew: product.isNew
+        };
       })
     );
   }
-
 
   async findOne(id: string): Promise<ProductViewModel> {
     const product = await this.productModel
